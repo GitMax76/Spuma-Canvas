@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Radio: Blockbuster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --blue: #004494;
+            --yellow: #FFD900;
+            --dark-bg: #1f2937;
+            --light-text: #f0f0f0;
+            --card-bg: #ffffff;
+            --card-text: #333;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            transition: background-color 0.3s ease;
+        }
+
+        /* HEADER */
+        .main-header {
+            background-color: var(--blue);
+            color: var(--yellow);
+            text-align: center;
+            padding: 20px 10px;
+            border-bottom: 5px solid var(--yellow);
+        }
+        .main-header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4.5rem;
+            letter-spacing: 3px;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.2);
+            line-height: 1;
+        }
+        .main-header p { font-size: 1.2rem; color: var(--light-text); font-weight: 300; }
+
+        /* NAVIGAZIONE */
+        .keypoint-nav {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            background-color: #111827;
+            padding: 10px 0;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-btn {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.5rem;
+            letter-spacing: 1px;
+            background-color: var(--dark-bg);
+            color: var(--light-text);
+            border: 2px solid var(--blue);
+            padding: 10px 25px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-btn:hover {
+            background-color: var(--yellow);
+            color: var(--blue);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(255, 217, 0, 0.3);
+        }
+        .nav-btn.active {
+            background-color: var(--yellow);
+            color: var(--blue);
+            border-color: var(--yellow);
+            box-shadow: 0 4px 10px rgba(255, 217, 0, 0.5);
+            transform: scale(1.05);
+        }
+
+        /* CONTENT CARD GENERICO */
+        .content-card {
+            background-color: var(--card-bg);
+            color: var(--card-text);
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease forwards;
+        }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        .content-card h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: var(--blue);
+            font-size: 2.8rem;
+            letter-spacing: 1px;
+            border-bottom: 3px solid var(--yellow);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+        }
+        .content-card h2 i { margin-right: 15px; font-size: 2.2rem; }
+        .content-card h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            color: #333;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .content-card p { font-size: 1.1rem; line-height: 1.7; margin-bottom: 15px; }
+        .content-card strong { color: var(--blue); font-weight: 700; }
+        .content-card ul { list-style-position: inside; padding-left: 5px; }
+        .content-card li { font-size: 1.1rem; line-height: 1.6; margin-bottom: 10px; }
+
+        /* ELEMENTI SPECIFICI */
+        .timeline-list { list-style: none; position: relative; padding-left: 20px; border-left: 3px solid var(--yellow); }
+        .timeline-list li { position: relative; margin-bottom: 20px; padding-left: 15px; }
+        .timeline-list li::before {
+            content: ''; position: absolute; left: -32px; top: 5px; width: 15px; height: 15px;
+            background-color: var(--blue); border-radius: 50%; border: 3px solid var(--yellow);
+        }
+        
+        .content-image { width: 100%; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+
+        .quote-box {
+            background: #f0f4f8; border-left: 8px solid var(--blue); padding: 25px 30px;
+            border-radius: 0 8px 8px 0; margin: 25px 0;
+        }
+        .quote-box blockquote {
+            font-family: 'Lato', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--blue); line-height: 1.5;
+        }
+        .quote-box cite { display: block; margin-top: 15px; font-size: 1.1rem; color: var(--card-text); font-style: normal; }
+        
+        .last-store-card {
+            position: relative;
+            background-image: url('http://googleusercontent.com/image_collection/image_retrieval/14687903894982448090');
+            background-size: cover; background-position: center; color: white; padding: 30px;
+            border-radius: 8px; overflow: hidden; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        .last-store-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(10, 42, 119, 0.6); z-index: 0;
+        }
+        .last-store-card h3, .last-store-card p { position: relative; z-index: 1; color: white; }
+        
+        footer { text-align: center; padding: 20px; color: #aaa; font-size: 0.9rem; }
+
+        /* === NUOVI STILI PER I NUMERI === */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .stat-card {
+            background-color: var(--blue);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid var(--yellow);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover { transform: translateY(-5px); }
+        .stat-number {
+            display: block;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: var(--yellow);
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .fun-fact {
+            background-color: #f3f4f6;
+            color: #333;
+            border-left: 5px solid var(--blue);
+            padding: 15px;
+            margin-top: 30px;
+            border-radius: 0 5px 5px 0;
+            font-size: 1.1rem;
+        }
+
+        /* === STILI PER INTRO === */
+        .icon-tile-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+            justify-content: center !important; 
+        }
+        .icon-tile {
+            background: #f0f4f8; padding: 25px; border-radius: 8px;
+            text-align: center; border: 1px solid #e2e8f0;
+        }
+        .icon-tile i { font-size: 3rem; color: var(--blue); margin-bottom: 15px; }
+        .icon-tile h3 { margin-top: 0; font-size: 1.5rem; color: var(--blue); }
+
+        .intro-layout { text-align: center; }
+        .content-card .intro-layout h2 { justify-content: center; text-align: center; }
+
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>BLOCKBUSTER</h1>
+        <p>Canvas Interattivo - Max</p>
+    </header>
+
+    <nav class="keypoint-nav">
+        <button class="nav-btn active" onclick="showContent('intro')">
+            <i class="fa-solid fa-clapperboard"></i> Intro
+        </button>
+        <button class="nav-btn" onclick="showContent('parola')">
+            <i class="fa-solid fa-font"></i> La Parola
+        </button>
+        <button class="nav-btn" onclick="showContent('ascesa')">
+            <i class="fa-solid fa-chart-line"></i> L'Ascesa
+        </button>
+        <!-- NUOVO BOTTONE -->
+        <button class="nav-btn" onclick="showContent('numeri')">
+            <i class="fa-solid fa-chart-pie"></i> I Numeri
+        </button>
+        <button class="nav-btn" onclick="showContent('declino')">
+            <i class="fa-solid fa-skull-crossbones"></i> Il Declino
+        </button>
+        <button class="nav-btn" onclick="showContent('eredita')">
+            <i class="fa-solid fa-star"></i> L'Eredità
+        </button>
+    </nav>
+
+    <main id="content-display" class="content-card">
+    </main>
+
+    <footer>
+        Spuma - Cultura Pop Radio
+    </footer>
+
+    <script>
+        const contentData = {
+            'intro': `
+                <div class="intro-layout">
+                    <h2><i class="fa-solid fa-calendar-days"></i> Intro: L'Anno Magico (1985)</h2>
+                    <p>Destinazione: <strong>1985</strong>. Un anno pazzesco per la cultura pop. Mentre Marty McFly viaggia nel tempo e Super Mario salva la principessa, a Dallas sta per nascere una rivoluzione.</p>
+                </div>
+                
+                <div class="icon-tile-container">
+                    <div class="icon-tile">
+                        <i class="fa-solid fa-gamepad"></i>
+                        <h3>Videogiochi</h3>
+                        <p>Nintendo lancia il NES e Super Mario Bros.</p>
+                    </div>
+                    <div class="icon-tile">
+                        <i class="fa-solid fa-guitar"></i>
+                        <h3>Musica</h3>
+                        <p>Il mondo si unisce per il *Live Aid*.</p>
+                    </div>
+                    <div class="icon-tile">
+                        <i class="fa-solid fa-ghost"></i>
+                        <h3>Cinema</h3>
+                        <p><u>Ritorno al Futuro</u>, <u>Rocky IV</u> e <u>I Goonies</u> fanno il <b>Sold-Out</b> ai botteghini.</p>
+                    </div>
+                </div>
+            `,
+            'parola': `
+                <h2><i class="fa-solid fa-bomb"></i> L'Origine della Parola</h2>
+                <p>Ma cosa significa <strong>"Blockbuster"</strong>? Non è una parola nata negli anni '80. La sua storia è molto più esplosiva.</p>
+                <ul class="timeline-list">
+                    <li>
+                        <h3>Anni '40: WWII</h3>
+                        <p>Era una <strong>bomba</strong>. Una di quelle capaci di distruggere un intero *isolato* (a "block").</p>
+                    </li>
+                    <li>
+                        <h3>Anni '50: Variety</h3>
+                        <p>Un film con code così lunghe al botteghino da fare <strong>il giro dell'isolato</strong>.</p>
+                    </li>
+                    <li>
+                        <h3>1975: Lo Squalo</h3>
+                        <p>Nasce il <strong>"Summer Blockbuster"</strong>, l'evento cinematografico estivo. Il primo, vero "squalo" del botteghino.</p>
+                    </li>
+                </ul>
+            `,
+            'ascesa': `
+                <h2><i class="fa-solid fa-tape"></i> L'Ascesa: Il Rito del Sabato Sera</h2>
+                <p>Dallas, 1985. L'idea di David Cook: non un negozietto, ma un <strong>supermercato di film</strong>. Il primo negozio apre con <strong>8.000 VHS</strong>, mentre i rivali ne avevano poche centinaia.</p>
+                <h3>La Formula Segreta</h3>
+                <ul>
+                    <li><strong>Sistema Computerizzato:</strong> L'arma segreta di David Cook, esperto di software, per gestire un inventario immenso.</li>
+                    <li><strong>Immagine Familiare:</strong> La mossa geniale. Via la "sezione per adulti" per creare un luogo sicuro per tutti.</li>
+                    <li><strong>"Be Kind, Rewind":</strong> "Sii gentile, riavvolgi". Più che una regola, una frase che ha unito una generazione (e causato liti).</li>
+                </ul>
+                <p>Blockbuster non vendeva film: vendeva <strong>un'esperienza condivisa</strong>. La pizza, il divano, e la lotta in famiglia per l'ultima copia di *Titanic* o *Il Re Leone*.</p>
+                <img class="content-image" src="https://www.vice.com/wp-content/uploads/sites/2/2017/10/1505897093010-001.jpeg" alt="Interno di un videonoleggio Blockbuster negli anni 90">
+            `,
+            'numeri': `
+                <h2><i class="fa-solid fa-chart-pie"></i> I Numeri del Colosso</h2>
+                <p>Nel suo momento di massimo splendore (2004), Blockbuster non era solo un negozio, era un impero economico globale. Ecco le cifre impressionanti del picco:</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">9.094</span>
+                        <span class="stat-label">Negozi nel Mondo</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">5,9 mld</span>
+                        <span class="stat-label">Fatturato ($)</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">84.300</span>
+                        <span class="stat-label">Dipendenti</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">65 MLN</span>
+                        <span class="stat-label">Membri Registrati</span>
+                    </div>
+                </div>
+
+                <div class="fun-fact">
+                    <p><strong><i class="fa-solid fa-money-bill-wave"></i> Il dato incredibile:</strong></p>
+                    <p>Nel 2000, Blockbuster incassò circa <strong>800 milioni di dollari</strong> solo dalle "Late Fees" (multe per ritardo). Rappresentavano il 16% del loro intero profitto! (Esattamente ciò che spinse Reed Hastings a fondare Netflix).</p>
+                </div>
+                
+                <h3 style="margin-top:30px; border-bottom: 2px solid #eee; padding-bottom:10px;">Media Settimanale</h3>
+                <ul style="margin-top: 15px; font-size: 1.1rem;">
+                    <li><i class="fa-solid fa-calendar-week" style="color:var(--blue)"></i> <strong>Venerdì & Sabato:</strong> Il 70% del business avveniva in queste due sere.</li>
+                    <li><i class="fa-solid fa-film" style="color:var(--blue)"></i> <strong>Titoli:</strong> Ogni negozio ospitava una media di 10.000 VHS/DVD.</li>
+                    <li><i class="fa-solid fa-pizza-slice" style="color:var(--blue)"></i> <strong>Popcorn:</strong> Era il secondo più grande venditore di popcorn negli USA dopo i cinema.</li>
+                </ul>
+            `,
+            'declino': `
+                <h2><i class="fa-solid fa-meteor"></i> Il Declino: L'Errore da 50 Milioni</h2>
+                <p>Come in ogni film, arriva il colpo di scena. Blockbuster era un T-Rex che non si è accorto del meteorite.</p>
+                
+                <div class="quote-box">
+                    <blockquote>Anno 2000. Una startup chiamata <strong>Netflix</strong> si offre a Blockbuster per 50 milioni di dollari. La risposta? Una risata.</blockquote>
+                    <cite>L'arroganza del gigante: l'errore più costoso della storia del pop.</cite>
+                </div>
+
+                <h3>Il Meteorite</h3>
+                <p>Mentre Blockbuster guadagnava miliardi con le odiatissime <strong>multe</strong> per i ritardi, Netflix (e lo streaming, e la pirateria) stavano cambiando il mondo.</p>
+                <ul>
+                    <li>Lo <strong>streaming</strong> iniziava a farsi strada.</li>
+                    <li>La <strong>pirateria</strong> (Napster, eMule) diventava di massa.</li>
+                    <li>Netflix (con i suoi DVD via posta) <strong>eliminava le multe</strong>.</li>
+                </ul>
+                <p>Il gigante era troppo lento, troppo pesante, e troppo arrogante per adattarsi. Bancarotta nel 2010.</p>
+            `,
+            'eredita': `
+                <h2><i class="fa-solid fa-monument"></i> L'Eredità: Solo Uno Rimasto</h2>
+                <p>Oggi, di quasi 9.000 negozi, ne è rimasto <strong>solo UNO</strong>. Un piccolo, eroico negozio a Bend, in Oregon.</p>
+                
+                <div class="last-store-card">
+                    <h3>Un Monumento Pop</h3>
+                    <p>È diventato un'icona, un luogo di pellegrinaggio per nostalgici, e persino un Airbnb a tema anni '90.</p>
+                </div>
+                
+                <h3 style="margin-top: 25px;">Cosa ci resta?</h3>
+                <p>Lo spirito di Blockbuster vive ancora. Vive ogni volta che passiamo <strong>40 minuti su Netflix a scegliere cosa guardare</strong> (esattamente come facevamo tra gli scaffali).</p>
+                <p>Ci ha lasciato la nostalgia per i riti condivisi e il brivido della scelta.</p>
+            `
+        };
+
+        function showContent(sectionId) {
+            const display = document.getElementById('content-display');
+            display.innerHTML = contentData[sectionId];
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelector(`button[onclick="showContent('${sectionId}')"]`).classList.add('active');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            showContent('intro');
+        });
+    </script>
+
+</body>
+</html>
