@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Radio: Blockbuster</title>
+    <!-- Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Icone (Versione Free Sicura) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --brand-blue: #004494;
+            --brand-yellow: #FFD900;
+            --bg-light: #f3f4f6; 
+            --text-main: #1f2937; 
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            /* Texture quadrettata leggera */
+            background-image: 
+                linear-gradient(#d1d5db 1px, transparent 1px),
+                linear-gradient(90deg, #d1d5db 1px, transparent 1px);
+            background-size: 40px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* HEADER */
+        .radio-header {
+            width: 100%;
+            background: var(--brand-blue);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 8px solid var(--brand-yellow);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo-container {
+            display: inline-block;
+            background: var(--brand-blue);
+            border: 4px solid var(--brand-yellow);
+            padding: 5px 25px;
+            transform: skew(-10deg);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+
+        .radio-header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: var(--brand-yellow);
+            letter-spacing: 2px;
+            margin: 0;
+            line-height: 1;
+            transform: skew(10deg); 
+            text-shadow: 2px 2px 0 #002855;
+        }
+
+        .sub-header {
+            color: white;
+            margin-top: 10px;
+            font-size: 1.1rem;
+        }
+
+        .rubrica-badge {
+            background: var(--brand-yellow);
+            color: var(--brand-blue);
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* NAVIGAZIONE */
+        .nav-bar {
+            background: #fff;
+            width: 100%;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            background: white;
+            border: 2px solid #d1d5db;
+            color: #6b7280;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn:hover {
+            border-color: var(--brand-blue);
+            color: var(--brand-blue);
+            background: #eff6ff;
+        }
+
+        .nav-btn.active {
+            background: var(--brand-blue);
+            color: var(--brand-yellow);
+            border-color: var(--brand-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 68, 148, 0.3);
+        }
+
+        /* MAIN CONTENT */
+        main {
+            width: 100%;
+            max-width: 900px;
+            padding: 30px 20px;
+            flex: 1;
+        }
+
+        .slide-card {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
+            animation: slideIn 0.4s ease;
+            border: 2px solid #004494;
+            border-top: 12px solid var(--brand-blue);
+            position: relative;
+            /* Texture VHS leggera */
+            background-image: linear-gradient(to right, rgba(0,68,148,0.03) 1px, transparent 1px);
+            background-size: 20px 100%;
+        }
+
+        /* Angolo piegato */
+        .slide-card::after {
+            content: ''; position: absolute; bottom: -2px; right: -2px; width: 0; height: 0;
+            border-style: solid; border-width: 0 0 40px 40px;
+            border-color: transparent transparent #e5e7eb transparent;
+        }
+
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: var(--brand-blue);
+            border-bottom: 5px solid var(--brand-yellow);
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; padding-bottom: 5px;
+            line-height: 1;
+        }
+
+        h2 i {
+            font-size: 2rem; color: var(--brand-yellow); background: var(--brand-blue);
+            padding: 10px; border-radius: 50%; transform: rotate(-10deg);
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+        }
+
+        h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; color: #333; margin-top: 25px; margin-bottom: 10px; }
+        p, li { font-size: 1.2rem; line-height: 1.6; color: #1f2937; margin-bottom: 15px; }
+        strong { color: var(--brand-blue); font-weight: 700; }
+
+        /* ELEMENTI SPECIALI */
+        .highlight-box {
+            background: #eff6ff; border-left: 8px solid var(--brand-blue); padding: 25px; margin: 25px 0;
+            position: relative; overflow: hidden;
+        }
+        .highlight-box.tech { background: #f0fdf4; border-left-color: #16a34a; }
+        .highlight-box.alert { background: #fff7ed; border-left-color: #f97316; }
+        .highlight-box.thought { background: #fafafa; border-left: 8px solid #333; font-style: italic; }
+
+        /* Icona di sfondo nei box */
+        .bg-icon {
+            position: absolute; top: 50%; right: -10px; transform: translateY(-50%) rotate(15deg);
+            font-size: 6rem; color: rgba(0, 0, 0, 0.05); pointer-events: none;
+        }
+
+        .intro-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .intro-item {
+            background: #fff; border: 2px solid #e5e7eb; padding: 20px; text-align: center; border-radius: 8px;
+        }
+        .intro-item i { font-size: 2.5rem; color: var(--brand-blue); margin-bottom: 10px; }
+        .intro-item h4 { font-family: 'Bebas Neue'; font-size: 1.4rem; margin: 0 0 5px 0; }
+
+        .stat-card {
+            background: var(--brand-blue); color: white; padding: 20px; text-align: center;
+            border-radius: 8px; border: 2px solid var(--brand-yellow);
+        }
+        .stat-num { display: block; font-family: 'Bebas Neue'; font-size: 3rem; color: var(--brand-yellow); }
+
+        footer { text-align: center; padding: 30px; color: #666; border-top: 1px solid #ddd; background: white; margin-top: auto; }
+
+        @media(max-width: 768px) {
+            .radio-header h1 { font-size: 2.5rem; }
+            .nav-btn { width: 48%; justify-content: center; }
+            h2 i { font-size: 1.5rem; padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="radio-header">
+        <div class="logo-container">
+            <h1>BLOCKBUSTER</h1>
+        </div>
+        <div class="sub-header">
+            <i class="fa-solid fa-radio"></i> <span class="rubrica-badge">BACK TO THE POP</span>
+            <span style="margin: 0 5px;">|</span>
+            di Max "McFly" Sabato
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <button class="nav-btn active" onclick="renderSlide('context1985')"><i class="fa-solid fa-calendar-check"></i> 1985 Pop</button>
+        <button class="nav-btn" onclick="renderSlide('nascita')"><i class="fa-solid fa-database"></i> Nascita</button>
+        <button class="nav-btn" onclick="renderSlide('origini')"><i class="fa-solid fa-font"></i> Nome</button>
+        <button class="nav-btn" onclick="renderSlide('ascesa')"><i class="fa-solid fa-arrow-trend-up"></i> Ascesa</button>
+        <button class="nav-btn" onclick="renderSlide('esperienza')"><i class="fa-solid fa-star"></i> Esperienza</button>
+        <button class="nav-btn" onclick="renderSlide('numeri')"><i class="fa-solid fa-calculator"></i> Numeri</button>
+        <button class="nav-btn" onclick="renderSlide('declino')"><i class="fa-solid fa-face-sad-tear"></i> Declino</button>
+        <button class="nav-btn" onclick="renderSlide('eredita')"><i class="fa-solid fa-heart"></i> Eredità</button>
+    </nav>
+
+    <main id="content-display">
+        <!-- Il contenuto appare qui -->
+    </main>
+
+    <footer>
+        Canvas Interattivo • <strong>Spuma Radio Show</strong> • 2025
+    </footer>
+
+    <script>
+        // Contenuto delle slide
+        const slides = {
+            'context1985': `
+                <div class="slide-card">
+                    <h2>Il 1985 Pop <i class="fa-solid fa-music"></i></h2>
+                    <p>Benvenuti a <strong>Dallas, Texas</strong>. Il 1985 è un anno epico per la cultura pop.</p>
+                    <div class="highlight-box">
+                        <i class="fa-solid fa-earth-americas bg-icon"></i>
+                        <p style="margin:0">Mentre un ingegnere sta per cambiare le nostre serate, ecco cosa succedeva nel mondo.</p>
+                    </div>
+                    <div class="intro-grid">
+                        <div class="intro-item">
+                            <i class="fa-solid fa-gamepad"></i>
+                            <h4>Super Mario</h4>
+                            <p>Esce il <strong>NES</strong>. Nintendo salva i videogiochi.</p>
+                        </div>
+                        <div class="intro-item">
+                            <i class="fa-solid fa-microphone-lines"></i>
+                            <h4>Live Aid</h4>
+                            <p>I Queen fanno la storia a Wembley.</p>
+                        </div>
+                        <div class="intro-item">
+                            <i class="fa-solid fa-film"></i>
+                            <h4>Cinema Cult</h4>
+                            <p><em>I Goonies</em>, <em>Rocky IV</em>, <em>Ritorno al Futuro</em>.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            'nascita': `
+                <div class="slide-card">
+                    <h2>19 Ott: La Nascita <i class="fa-solid fa-ticket"></i></h2>
+                    <p>Apre il primo Blockbuster. Non è un videonoleggio normale: è una rivoluzione tech.</p>
+                    <div class="highlight-box tech">
+                        <i class="fa-solid fa-microchip bg-icon"></i>
+                        <h3><i class="fa-solid fa-database"></i> L'Intuizione di David Cook</h3>
+                        <p>Il fondatore creava software per l'industria del <strong>petrolio</strong>.</p>
+                        <p>Capì che poteva usare i suoi database per tracciare le cassette. Mentre i rivali usavano carta e penna, lui usò un <strong>Mainframe</strong> e i <strong>codici a barre</strong>.</p>
+                        <p><strong>Risultato:</strong> 8.000 titoli per negozio contro i 500 dei concorrenti.</p>
+                    </div>
+                </div>
+            `,
+            'origini': `
+                <div class="slide-card">
+                    <h2>Perché "Blockbuster"? <i class="fa-solid fa-bomb"></i></h2>
+                    <p>Il termine non nasce a Hollywood, ma nella <strong>Seconda Guerra Mondiale</strong>.</p>
+                    <ul>
+                        <li><strong>Anni '40:</strong> Le "Blockbusters" erano bombe della RAF così potenti da distruggere un intero isolato ("block").</li>
+                        <li><strong>Anni '50:</strong> La stampa usò il termine per i film con code così lunghe da fare il giro dell'isolato.</li>
+                        <li><strong>1975:</strong> Con <em>Lo Squalo</em> nasce l'era del "Summer Blockbuster".</li>
+                    </ul>
+                </div>
+            `,
+            'ascesa': `
+                <div class="slide-card">
+                    <h2>La Formula Vincente <i class="fa-solid fa-arrow-trend-up"></i></h2>
+                    <p>Nel 1987, <strong>Wayne Huizenga</strong> compra l'azienda. Applica una strategia "alla McDonald's".</p>
+                    <div class="highlight-box">
+                        <i class="fa-solid fa-store bg-icon"></i>
+                        <h3><i class="fa-solid fa-check-circle"></i> I Pilastri del Successo</h3>
+                        <ul>
+                            <li><strong>Aperti Sempre:</strong> Fino a mezzanotte, 365 giorni l'anno.</li>
+                            <li><strong>Quantità:</strong> Muri interi di copie delle novità ("Guaranteed in Stock").</li>
+                            <li><strong>Ambiente Sicuro:</strong> Luci forti, pulizia, niente pornografia. Un posto per famiglie.</li>
+                        </ul>
+                    </div>
+                    <p>Nel 1994, l'azienda viene venduta a Viacom per <strong>8,4 miliardi di dollari</strong>.</p>
+                </div>
+            `,
+            'esperienza': `
+                <div class="slide-card">
+                    <h2>Il Rituale del Venerdì <i class="fa-solid fa-pizza-slice"></i></h2>
+                    <p>Blockbuster vendeva la promessa di una serata perfetta. Era un'esperienza sensoriale.</p>
+                    <div class="intro-grid">
+                        <div class="intro-item">
+                            <i class="fa-solid fa-eye"></i>
+                            <h4>L'Atmosfera</h4>
+                            <p>Le luci al neon, la moquette blu e gialla e l'odore di plastica.</p>
+                        </div>
+                        <div class="intro-item">
+                            <i class="fa-solid fa-hand-pointer"></i>
+                            <h4>Il Tatto</h4>
+                            <p>Il rumore secco delle custodie e il peso della cassetta in mano.</p>
+                        </div>
+                        <div class="intro-item">
+                            <i class="fa-solid fa-comments"></i>
+                            <h4>La Scelta</h4>
+                            <p>Si passava più tempo a litigare su cosa vedere che a guardare il film.</p>
+                        </div>
+                    </div>
+                </div>
+            `,
+            'numeri': `
+                <div class="slide-card">
+                    <h2>I Numeri & Le Multe <i class="fa-solid fa-chart-pie"></i></h2>
+                    <p>Al suo apice (2004), Blockbuster era un impero. Ma aveva un segreto oscuro.</p>
+                    <div class="intro-grid">
+                        <div class="stat-card">
+                            <span class="stat-num">9.094</span>
+                            <p>Negozi</p>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">5,9 Mld</span>
+                            <p>Fatturato ($)</p>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-num">65 MLN</span>
+                            <p>Utenti</p>
+                        </div>
+                    </div>
+                    <div class="highlight-box alert">
+                        <i class="fa-solid fa-triangle-exclamation bg-icon"></i>
+                        <h3><i class="fa-solid fa-file-invoice-dollar"></i> La "Droga" delle Late Fees</h3>
+                        <p>Blockbuster incassava <strong>800 milioni di dollari l'anno</strong> solo dalle multe per ritardo (16% dei profitti totali!).</p>
+                        <p>Questo guadagno "facile" sugli errori dei clienti ha impedito loro di innovare. Fu proprio l'odio per una multa di 40$ su <em>Apollo 13</em> a spingere Reed Hastings a fondare <strong>Netflix</strong>.</p>
+                    </div>
+                </div>
+            `,
+            'declino': `
+                <div class="slide-card">
+                    <h2>Il Rifiuto Storico <i class="fa-solid fa-ban"></i></h2>
+                    <p>Anno 2000. <strong>Reed Hastings</strong> (Netflix) offre a <strong>John Antioco</strong> (CEO Blockbuster) di vendere Netflix per <strong>50 milioni di dollari</strong>.</p>
+                    <div class="highlight-box">
+                        <i class="fa-regular fa-face-laugh-squint bg-icon"></i>
+                        <p>Antioco rise in faccia a Hastings. Credeva che lo streaming fosse una nicchia. Ma soprattutto, passare allo streaming avrebbe significato <strong>rinunciare alle multe</strong> (che Netflix non aveva).</p>
+                    </div>
+                    <p>Blockbuster scelse il profitto immediato invece del futuro. Nel 2010 dichiarò bancarotta.</p>
+                </div>
+            `,
+            'eredita': `
+                <div class="slide-card">
+                    <h2>Cosa ci manca davvero? <i class="fa-solid fa-heart"></i></h2>
+                    <p>Non è semplice nostalgia. È la consapevolezza di aver perso qualcosa di importante.</p>
+
+                    <div class="highlight-box thought">
+                         <i class="fa-solid fa-users bg-icon"></i>
+                         <p><strong>Ci manca il rituale:</strong> gli appuntamenti del venerdì sera, le discussioni accese davanti agli scaffali, le speranze di trovare l'ultima copia, i suoni delle custodie e gli odori della moquette.</p>
+                    </div>
+
+                    <h3>Troppo Veloci?</h3>
+                    <p>Oggi vogliamo tutto <strong>facile, veloce e pratico</strong>. Un algoritmo sceglie per noi e clicchiamo "Play" senza pensare.</p>
+                    <p>Ma così <strong>perdiamo il lato umano</strong>. Quella "fatica" di uscire di casa, incontrarsi e scegliere insieme non era tempo perso: era tempo speso a costruire relazioni.</p>
+
+                    <div style="text-align:center; margin-top:30px; border-top:1px solid #eee; padding-top:20px;">
+                        <p><em>"Forse dovremmo rallentare e riavvolgere il nastro."</em></p>
+                        <button class="nav-btn active" style="margin:0 auto;" onclick="renderSlide('context1985')">
+                            <i class="fa-solid fa-rotate-right"></i> Riavvolgi
+                        </button>
+                    </div>
+                </div>
+            `
+        };
+
+        // Funzione Semplificata e Sicura
+        function renderSlide(slideKey) {
+            const display = document.getElementById('content-display');
+            
+            // 1. Aggiorna Contenuto
+            if (slides[slideKey]) {
+                display.innerHTML = slides[slideKey];
+            } else {
+                display.innerHTML = '<p style="color:red; text-align:center;">Errore: Slide non trovata.</p>';
+            }
+
+            // 2. Aggiorna Bottoni
+            const allButtons = document.querySelectorAll('.nav-btn');
+            allButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Trova il bottone che ha chiamato questa funzione
+            const activeButton = Array.from(allButtons).find(btn => 
+                btn.getAttribute('onclick').includes(slideKey)
+            );
+            
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
+        }
+
+        // Avvio all'apertura della pagina
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSlide('context1985');
+        });
+
+    </script>
+
+</body>
+</html>
