@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Non è la RAI - L'Analisi Interattiva</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Chosen Palette: 90s Pop Fluo (Base rosa pallido, accenti Rosa Fluo, Teal e Viola) -->
+    <!-- Application Structure Plan: Un'interfaccia SPA (Single Page Application) con navigazione a schede tematiche (L'Inizio, Il Fenomeno, L'Eredità, Extra). Il clic sui pulsanti aggiorna dinamicamente l'area del contenuto centrale. Questa struttura è scelta per trasformare la scaletta lineare della radio in un'esperienza "zapping" interattiva, permettendo all'utente di esplorare i temi liberamente, rispecchiando il mood caotico ma navigabile del programma stesso. -->
+    <!-- Visualization & Content Choices: 'L'Inizio' usa card HTML/Tailwind per i concetti (Format, Eternit, Acquario). 'Il Fenomeno' usa card per Ambra-mania/Casting. 'L'Eredità' combina un Grafico a Ciambella (Chart.js/Canvas) per le componenti dell'impatto (Social, Talenti, Cultura) e una 'Hall of Fame' in HTML (con i nomi corretti dalla scaletta: Laura Freddi inclusa). 'Extra' usa card per le curiosità (Zapping, Merchandising, Sigla). -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+        @media (min-width: 640px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pop-pink': '#F472B6',
+                        'pop-teal': '#2DD4BF',
+                        'pop-purple': '#A78BFA',
+                        'pop-bg': '#FFF5F7',
+                        'pop-black': '#1E1E1E',
+                    },
+                    fontFamily: {
+                        heading: ['Fredoka One', 'cursive'],
+                        body: ['Poppins', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        '90s-pink': '8px 8px 0px #F472B6',
+                        '90s-teal': '8px 8px 0px #2DD4BF',
+                        '90s-purple': '8px 8px 0px #A78BFA',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-pop-bg font-body text-pop-black">
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <header class="text-center mb-8 md:mb-12">
+            <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl text-pop-pink drop-shadow-lg mb-2">NON È LA RAI</h1>
+            <p class="font-heading text-xl sm:text-2xl text-pop-teal">L'Analisi Interattiva del Fenomeno Pop</p>
+        </header>
+
+        <nav id="navigation" class="flex flex-wrap justify-center gap-3 md:gap-4 mb-8">
+            <button data-target="inizio" class="nav-button font-heading text-lg bg-pop-pink text-white py-3 px-6 rounded-full shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-200">
+                📺 L'Inizio
+            </button>
+            <button data-target="fenomeno" class="nav-button font-heading text-lg bg-pop-teal text-white py-3 px-6 rounded-full shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-200">
+                💄 Il Fenomeno
+            </button>
+            <button data-target="eredita" class="nav-button font-heading text-lg bg-pop-purple text-white py-3 px-6 rounded-full shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-200">
+                🎒 L'Eredità
+            </button>
+            <button data-target="extra" class="nav-button font-heading text-lg bg-gray-700 text-white py-3 px-6 rounded-full shadow-lg transform hover:scale-105 hover:shadow-xl transition-all duration-200">
+                📼 Extra
+            </button>
+        </nav>
+
+        <main id="content-area" class="bg-white rounded-2xl shadow-2xl p-6 md:p-10 min-h-[40vh]">
+
+            <section id="inizio" class="content-section space-y-6">
+                <h2 class="font-heading text-3xl text-pop-pink mb-4">L'Inizio: Il Caos Organizzato</h2>
+                <p class="text-lg leading-relaxed">
+                    Torniamo al 1991. Gianni Boncompagni e Irene Ghergo hanno un'idea folle: creare un programma quotidiano senza un copione vero, senza "contenuti" tradizionali, ma pieno di vita. Era la "TV del nulla" elevata a forma d'arte, un acquario colorato e rumoroso che ha ipnotizzato un'intera generazione.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-teal">
+                        <h3 class="font-heading text-2xl text-pop-teal mb-2">La Rivoluzione del Nulla</h3>
+                        <p>Niente contenuti, solo *esserci*. Il programma era fatto di giochi telefonici (a volte surreali), canzoni in playback palese e una sensazione di festa perenne. La prima trasmissione senza una scaletta rigida, dove l'imprevisto era la regola.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-pink">
+                        <h3 class="font-heading text-2xl text-pop-pink mb-2">Il Caso "Eternit"</h3>
+                        <p>Il momento più incredibile dei giochi telefonici. Una signora indovinò la parola "Eternit" quando il tabellone del cruciverbone era ancora completamente vuoto. Enrica Bonaccorti si infuriò in diretta, smascherando la truffa. Storia della TV.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-purple md:col-span-2">
+                        <h3 class="font-heading text-2xl text-pop-purple mb-2">L'Acquario di Boncompagni</h3>
+                        <p>Lo studio non era un palco, era un "acquario". Le telecamere si muovevano liberamente tra le ragazze, creando un'atmosfera da festa delle medie. Boncompagni dirigeva tutto dal suo "bunker" (la regia), come un burattinaio invisibile.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="fenomeno" class="content-section hidden space-y-6">
+                <h2 class="font-heading text-3xl text-pop-teal mb-4">Il Fenomeno Culturale</h2>
+                <p class="text-lg leading-relaxed">
+                    Più che un programma, "Non è la RAI" è diventato un fenomeno di costume. Ha creato le prime "influencer" prima dei social, con centinaia di ragazze che diventavano volti noti. Ma su tutte, una ha definito l'epoca: Ambra Angiolini.
+                </p>
+                <div class="bg-pop-pink/10 p-6 rounded-lg border-4 border-pop-pink shadow-lg">
+                    <h3 class="font-heading text-2xl text-pop-pink mb-3">L'Ambra-Mania</h3>
+                    <p class="mb-4">Ambra non era una conduttrice, era un "generale" adolescente. Gestiva il palco con autorità, sfacciataggine e un carisma inspiegabile.</p>
+                    <ul class="list-disc list-inside space-y-2 font-medium">
+                        <li><span class="font-heading">L'Auricolare:</span> Il mito. Si diceva che Boncompagni le dettasse ogni singola parola, rendendola il suo "avatar" fisico in studio. Geniale e inquietante.</li>
+                        <li><span class="font-heading">Influenza Teen:</span> Tutte volevano i suoi capelli, le sue mosse, il suo carattere. Ha sdoganato la "ragazzina sveglia e un po' cattiva" contro il modello della "brava bambina".</li>
+                        <li><span class="font-heading">T'Appartengo:</span> La sua hit, un inno generazionale cantato (in playback) da milioni di adolescenti con tanto di coreografia.</li>
+                    </ul>
+                </div>
+                 <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-teal">
+                    <h3 class="font-heading text-2xl text-pop-teal mb-2">Il Casting Infinito</h3>
+                    <p>C'era la ragazza che ballava bene, quella che piangeva sempre, quella "che piace ai nonni", quella timida e quella sfacciata. Ogni spettatore poteva trovare la sua preferita in un cast enorme e in continua rotazione.</p>
+                </div>
+            </section>
+
+            <section id="eredita" class="content-section hidden space-y-8">
+                <h2 class="font-heading text-3xl text-pop-purple mb-4">L'Eredità: Cosa ci ha lasciato?</h2>
+                <p class="text-lg leading-relaxed">
+                    Perché parliamo ancora di un programma finito decenni fa? Perché, nel suo caos colorato, "Non è la RAI" ha gettato le basi per la TV (e il web) che vediamo oggi. È stato un esperimento sociale travestito da varietà.
+                </p>
+                
+                <div>
+                    <h3 class="font-heading text-2xl text-center text-pop-purple mb-4">Le Componenti dell'Eredità</h3>
+                    <div class="chart-container">
+                        <canvas id="legacyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-pink">
+                        <h3 class="font-heading text-2xl text-pop-pink mb-2">Le "Nonne" di TikTok</h3>
+                        <p>Ragazze normali che diventano famose ballando canzoni di altri per pochi secondi, guardando in camera? "Non è la RAI" è stato il primo social network prima di Internet. Ha inventato il concetto di "creator" dal nulla.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-teal">
+                        <h3 class="font-heading text-2xl text-pop-teal mb-2">La Polemica Sociale</h3>
+                        <p>Ha diviso l'Italia. Gli intellettuali lo odiavano (Vasco ci scrisse "Delusa"), i ragazzini lo amavano, i papà... guardavano. È stato il primo vero "reality show" mascherato, esponendo le ambizioni e le dinamiche adolescenziali in diretta.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-heading text-2xl text-center text-pop-purple mb-4">Hall of Fame: Il Trampolino</h3>
+                    <p class="text-center mb-4">Non era solo "caos". In mezzo a centinaia di ragazze, c'era talento vero che da lì ha spiccato il volo.</p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <span class="bg-pop-purple/20 text-pop-purple font-heading text-lg py-2 px-4 rounded-full">Claudia Gerini</span>
+                        <span class="bg-pop-purple/20 text-pop-purple font-heading text-lg py-2 px-4 rounded-full">Sabrina Impacciatore</span>
+                        <span class="bg-pop-purple/20 text-pop-purple font-heading text-lg py-2 px-4 rounded-full">Lucia Ocone</span>
+                        <span class="bg-pop-purple/20 text-pop-purple font-heading text-lg py-2 px-4 rounded-full">Nicole Grimaudo</span>
+                        <span class="bg-pop-purple/20 text-pop-purple font-heading text-lg py-2 px-4 rounded-full">Miriana Trevisan</span>
+                        <span class="bg-pop-purple/20 text-pop-purple font-heading text-lg py-2 px-4 rounded-full">Laura Freddi</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="extra" class="content-section hidden space-y-6">
+                <h2 class="font-heading text-3xl text-gray-700 mb-4">Curiosità & Extra</h2>
+                <p class="text-lg leading-relaxed">
+                    I piccoli dettagli che hanno reso "Non è la RAI" un cult assoluto.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-pink">
+                        <h3 class="font-heading text-2xl text-pop-pink mb-2">Creato per lo Zapping</h3>
+                        <p>Era la prima trasmissione pensata per chi faceva zapping. Potevi guardarla per 2 minuti o 2 ore, sintonizzandoti in qualsiasi momento, e non perdevi nessun filo logico. Catturava l'attenzione immediatamente.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-teal">
+                        <h3 class="font-heading text-2xl text-pop-teal mb-2">Il Merchandising</h3>
+                        <p>Un fenomeno non solo televisivo. Diari, album di figurine (che andavano a ruba), gomme da masticare, dischi. Il brand "Non è la RAI" era ovunque, un vero precursore del marketing moderno per teenager.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border-4 border-pop-black shadow-90s-purple md:col-span-2">
+                        <h3 class="font-heading text-2xl text-pop-purple mb-2">La Sigla</h3>
+                        <p class="font-mono italic text-lg">"Ma com'è bello qui, ma com'è grande qui, ci piace troppo ma non è la Rai..."</p>
+                        <p class="mt-2">Una sigla semplice, quasi ipnotica e un po' inquietante, che si ficcava in testa e non usciva più. Puro stile Boncompagni.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-8 p-4">
+            <p class="text-gray-500 text-sm">Un'analisi interattiva ispirata alla cultura pop degli anni '90.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const legacyChartCanvas = document.getElementById('legacyChart');
+
+            let legacyChart;
+
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+
+                        sections.forEach(section => {
+                            section.classList.add('hidden');
+                        });
+
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) {
+                            targetSection.classList.remove('hidden');
+                        }
+                        
+                        buttons.forEach(btn => btn.classList.remove('active', 'scale-110'));
+                        button.classList.add('active', 'scale-110');
+                        
+                        if (targetId === 'eredita' && !legacyChart) {
+                            initLegacyChart();
+                        }
+                    });
+                });
+                
+                if (buttons.length > 0) {
+                    buttons[0].click();
+                }
+            }
+
+            function initLegacyChart() {
+                if (legacyChartCanvas) {
+                    const ctx = legacyChartCanvas.getContext('2d');
+                    
+                    const chartData = {
+                        labels: ['Precursore Social Media', 'Trampolino di Talenti', 'Impatto Culturale (Polemica)'],
+                        datasets: [{
+                            label: 'Eredità di Non è la RAI',
+                            data: [40, 35, 25],
+                            backgroundColor: [
+                                '#F472B6',
+                                '#2DD4BF',
+                                '#A78BFA',
+                            ],
+                            borderColor: '#FFF5F7',
+                            borderWidth: 4,
+                            hoverOffset: 4
+                        }]
+                    };
+
+                    const chartOptions = {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        family: 'Poppins',
+                                        size: 14
+                                    },
+                                    color: '#1E1E1E'
+                                }
+                            },
+                            tooltip: {
+                                titleFont: {
+                                    family: 'Fredoka One'
+                                },
+                                bodyFont: {
+                                    family: 'Poppins'
+                                },
+                                callbacks: {
+                                    label: function(context) {
+                                        return `${context.label}: ${context.raw}%`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '60%'
+                    };
+
+                    legacyChart = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: chartData,
+                        options: chartOptions
+                    });
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+
+</body>
+</html>
