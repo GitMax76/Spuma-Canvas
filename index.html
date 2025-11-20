@@ -14,16 +14,16 @@
   }
   .logo-bg {
     width: 100vw;
-    height: 150px;
+    height: 200px;
     position: relative;
     overflow: visible;
     background: none;
-    margin-bottom: 120px;
+    margin-bottom: 130px;
   }
   .bollicine {
     position: absolute;
     top: 0; left: 0;
-    width: 100%; height: 180px;
+    width: 100%; height: 200px;
     pointer-events: none;
     z-index: 1;
     opacity: 0.45;
@@ -41,14 +41,15 @@
     top: var(--start);
     animation-delay: var(--delay);
   }
-  .bollicine span:nth-child(1) { --size: 7px;  --left: 11vw; --start: 150px; --dur: 3.1s; --delay: 0s;}
+  /* Più bollicine animate */
+  .bollicine span:nth-child(1) { --size: 7px;  --left: 11vw; --start: 160px; --dur: 3.1s; --delay: 0s;}
   .bollicine span:nth-child(2) { --size: 9px;  --left: 19vw; --start: 170px; --dur: 2.6s; --delay: 0.7s;}
-  .bollicine span:nth-child(3) { --size: 8px;  --left: 27vw; --start: 125px; --dur: 2.8s; --delay: 1.2s;}
-  .bollicine span:nth-child(4) { --size: 10px; --left: 33vw; --start: 180px; --dur: 2.3s; --delay: 2.1s;}
-  .bollicine span:nth-child(5) { --size: 6px;  --left: 45vw; --start: 150px; --dur: 2.1s; --delay: 1.7s;}
-  .bollicine span:nth-child(6) { --size: 8px;  --left: 52vw; --start: 170px; --dur: 2.5s; --delay: 2.5s;}
-  .bollicine span:nth-child(7) { --size: 7px;  --left: 59vw; --start: 120px; --dur: 1.7s; --delay: 0.2s;}
-  .bollicine span:nth-child(8) { --size: 9px;  --left: 66vw; --start: 165px; --dur: 1.9s; --delay: 2.9s;}
+  .bollicine span:nth-child(3) { --size: 8px;  --left: 27vw; --start: 135px; --dur: 2.8s; --delay: 1.2s;}
+  .bollicine span:nth-child(4) { --size: 10px; --left: 33vw; --start: 170px; --dur: 2.3s; --delay: 2.1s;}
+  .bollicine span:nth-child(5) { --size: 6px;  --left: 45vw; --start: 170px; --dur: 2.1s; --delay: 1.7s;}
+  .bollicine span:nth-child(6) { --size: 8px;  --left: 52vw; --start: 180px; --dur: 2.5s; --delay: 2.5s;}
+  .bollicine span:nth-child(7) { --size: 7px;  --left: 59vw; --start: 150px; --dur: 1.7s; --delay: 0.2s;}
+  .bollicine span:nth-child(8) { --size: 9px;  --left: 66vw; --start: 170px; --dur: 1.9s; --delay: 2.9s;}
   .bollicine span:nth-child(9) { --size: 6px;  --left: 72vw; --start: 140px; --dur: 2.3s; --delay: 1.8s;}
   .bollicine span:nth-child(10){ --size: 8px;  --left: 78vw; --start: 180px; --dur: 1.5s; --delay: 1s;}
   .bollicine span:nth-child(11){ --size: 7px;  --left: 84vw; --start: 145px; --dur: 2.8s; --delay: 2.3s;}
@@ -58,20 +59,35 @@
   .bollicine span:nth-child(15){ --size: 7px;  --left: 57vw; --start: 170px; --dur: 2.1s; --delay: 2.5s;}
   .bollicine span:nth-child(16){ --size: 8px;  --left: 71vw; --start: 130px; --dur: 2.3s; --delay: 1.3s;}
   .bollicine span:nth-child(17){ --size: 6px;  --left: 77vw; --start: 160px; --dur: 1.8s; --delay: 2.1s;}
-  .bollicine span:nth-child(18){ --size: 8px;  --left: 94vw; --start: 180px; --dur: 2.5s; --delay: 0.4s;}
+  .bollicine span:nth-child(18){ --size: 8px;  --left: 94vw; --start: 190px; --dur: 2.5s; --delay: 0.4s;}
   @keyframes bollicineUp {
     0% {transform:translateY(0);}
-    100% {transform:translateY(-110px);}
+    100% {transform:translateY(-120px);}
   }
   .logo-spuma {
     position: relative;
     z-index: 2;
-    width: 260px;
-    max-width: 92vw;
+    width: 325px; /* LOGO INGRANDITO */
+    max-width: 95vw;
     display: block;
     margin: 50px auto 0 auto;
     background: transparent;
     box-shadow: none;
+  }
+  .subtitle-pop {
+    font-size: 1.3rem;
+    margin: 8px auto 0 auto;
+    letter-spacing: 0.15em;
+    color: #fff;
+    text-shadow:
+      2px 2px 0 #ff3a3a,
+      3px 3px 10px #b7003633,
+      0 2px 16px #fff20088;
+    font-family: 'Arial Black', Arial, sans-serif;
+    font-weight: 900;
+    text-transform: uppercase;
+    z-index: 4;
+    position: relative;
   }
   .menu {
     margin: 0 auto;
@@ -80,12 +96,11 @@
   }
   button {
     display: block;
-    font-size: 1.3rem; /* dimunuzione font solo per coming soon */
-    padding: 11px 0;
+    font-size: 1.3rem;
+    padding: 13px 0;
     margin: 13px auto;
     border-radius: 10px;
     border: none;
-    cursor: default;
     width: 100%;
     max-width: 360px;
     font-weight: 900;
@@ -98,14 +113,29 @@
     position: relative;
     opacity: 0.87;
     pointer-events: none;
+    transition: transform 0.18s cubic-bezier(.22,1.33,.51,1.08), box-shadow 0.18s;
+    /* default poppino */
+    outline: none;
   }
-  /* Bottoni definiti (pulsanti normali) */
+  /* Bottoni definiti (pulsanti normali) con animazione hover */
   .btn-blockbuster, .btn-ner {
     font-size: 2.4rem;
     padding: 20px 0;
     margin: 22px auto;
     pointer-events: auto;
     opacity: 1;
+    cursor: pointer;
+    transition: 
+      transform 0.20s cubic-bezier(.22,1.33,.51,1.08), 
+      box-shadow 0.18s,
+      filter 0.2s;
+  }
+  .btn-blockbuster:hover,
+  .btn-ner:hover {
+    transform: scale(1.06) translateY(-6px) rotate(-1.5deg);
+    box-shadow: 0 13px 38px #ffd90066, 0 2px 9px #2226;
+    filter: brightness(1.07) saturate(1.1);
+    z-index: 9;
   }
   .btn-blockbuster {
     background: #1e2c5c;
@@ -126,10 +156,31 @@
     text-shadow: 1px 1px 0 #fff, 0 0 13px #ed2685, 0 2px 19px #00c1ec;
     font-size: 2.3rem;
   }
+  /* Animazione pulse sui bottoni COMING SOON */
+  button[disabled] {
+    animation: soonPulse 1.1s infinite alternate;
+    opacity: 0.73;
+    cursor: not-allowed;
+    pointer-events: none;
+    font-size: 1rem;
+    padding: 8px 0;
+    margin: 8px auto;
+    border: 2px dashed #f9b835;
+    background: linear-gradient(90deg, #f9b835 25%, #ffd8d8 100%);
+    color: #b70036;
+    text-shadow: none;
+    letter-spacing: 2px;
+    box-shadow: 0 2px 10px #b7003622;
+    text-transform: uppercase;
+  }
+  @keyframes soonPulse {
+    0% { box-shadow: 0 0 0 #ffd80022;  filter: brightness(1);}
+    60% { box-shadow: 0 0 14px #ffd80066; filter: brightness(1.06);}
+    100% { box-shadow: 0 0 0 #ffd80022; filter: brightness(1);}
+  }
 </style>
 </head>
 <body>
-
 <div class="logo-bg">
   <div class="bollicine">
     <span></span><span></span><span></span><span></span><span></span>
@@ -138,8 +189,8 @@
     <span></span><span></span><span></span><span></span>
   </div>
   <img src="spuma.png" alt="Logo SPUMA" class="logo-spuma" />
+  <div class="subtitle-pop">we spread POP culture</div>
 </div>
-
 <main class="menu">
   <button class="btn-blockbuster" onclick="window.location.href='blockbuster.html'">
     BLOCKBUSTER
@@ -147,11 +198,10 @@
   <button class="btn-ner" onclick="window.location.href='nonelarai.html'">
     Non è la Rai
   </button>
-  <!-- Puntate non definite solo testo, font più piccolo -->
+  <!-- Episodi futuri solo "COMING SOON" -->
   <button disabled>COMING SOON</button>
   <button disabled>COMING SOON</button>
   <button disabled>COMING SOON</button>
 </main>
-
 </body>
 </html>
