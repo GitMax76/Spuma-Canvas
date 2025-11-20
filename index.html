@@ -12,54 +12,100 @@
     color: white;
     text-align: center;
   }
-  header {
-    background: linear-gradient(135deg, #ff5e5e, #aa0e0e);
-    padding: 28px 10px 18px 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+  .logo-bg {
+    width: 100vw;
+    height: 180px;
     position: relative;
+    overflow: visible;
+    background: none;
+    margin-bottom: 120px;
+  }
+  .bollicine {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 180px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.45;
+  }
+  .bollicine span {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 10px 0 rgba(255,255,255,0.4);
+    mix-blend-mode: screen;
+    opacity: 0.72;
+    animation: bollicineUp var(--dur) linear infinite;
+    left: var(--left);
+    width: var(--size); height: var(--size);
+    top: var(--start);
+    animation-delay: var(--delay);
+  }
+  .bollicine span:nth-child(1) { --size: 7px;  --left: 11vw; --start: 150px; --dur: 3.1s; --delay: 0s;}
+  .bollicine span:nth-child(2) { --size: 9px;  --left: 19vw; --start: 170px; --dur: 2.6s; --delay: 0.7s;}
+  .bollicine span:nth-child(3) { --size: 8px;  --left: 27vw; --start: 125px; --dur: 2.8s; --delay: 1.2s;}
+  .bollicine span:nth-child(4) { --size: 10px; --left: 33vw; --start: 180px; --dur: 2.3s; --delay: 2.1s;}
+  .bollicine span:nth-child(5) { --size: 6px;  --left: 45vw; --start: 150px; --dur: 2.1s; --delay: 1.7s;}
+  .bollicine span:nth-child(6) { --size: 8px;  --left: 52vw; --start: 170px; --dur: 2.5s; --delay: 2.5s;}
+  .bollicine span:nth-child(7) { --size: 7px;  --left: 59vw; --start: 120px; --dur: 1.7s; --delay: 0.2s;}
+  .bollicine span:nth-child(8) { --size: 9px;  --left: 66vw; --start: 165px; --dur: 1.9s; --delay: 2.9s;}
+  .bollicine span:nth-child(9) { --size: 6px;  --left: 72vw; --start: 140px; --dur: 2.3s; --delay: 1.8s;}
+  .bollicine span:nth-child(10){ --size: 8px;  --left: 78vw; --start: 180px; --dur: 1.5s; --delay: 1s;}
+  .bollicine span:nth-child(11){ --size: 7px;  --left: 84vw; --start: 145px; --dur: 2.8s; --delay: 2.3s;}
+  .bollicine span:nth-child(12){ --size: 8px;  --left: 91vw; --start: 170px; --dur: 2.1s; --delay: 2.7s;}
+  .bollicine span:nth-child(13){ --size: 6px;  --left: 16vw; --start: 180px; --dur: 2.6s; --delay: 1.4s;}
+  .bollicine span:nth-child(14){ --size: 9px;  --left: 36vw; --start: 120px; --dur: 2.8s; --delay: 1.9s;}
+  .bollicine span:nth-child(15){ --size: 7px;  --left: 57vw; --start: 170px; --dur: 2.1s; --delay: 2.5s;}
+  .bollicine span:nth-child(16){ --size: 8px;  --left: 71vw; --start: 130px; --dur: 2.3s; --delay: 1.3s;}
+  .bollicine span:nth-child(17){ --size: 6px;  --left: 77vw; --start: 160px; --dur: 1.8s; --delay: 2.1s;}
+  .bollicine span:nth-child(18){ --size: 8px;  --left: 94vw; --start: 180px; --dur: 2.5s; --delay: 0.4s;}
+  @keyframes bollicineUp {
+    0% {transform:translateY(0);}
+    100% {transform:translateY(-110px);}
   }
   .logo-spuma {
+    position: relative;
+    z-index: 2;
     width: 260px;
     max-width: 92vw;
     display: block;
-    margin: 0 auto 12px auto;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 2px 8px 14px rgba(0,0,0,0.10);
+    margin: 35px auto 0 auto;
+    background: transparent;
+    box-shadow: none;
   }
   .menu {
-    margin: 44px auto;
+    margin: 0 auto;
     max-width: 380px;
     padding: 0 10px;
   }
-
   button {
     display: block;
-    font-size: 2.4rem;
-    padding: 20px 0;
-    margin: 22px auto;
+    font-size: 1.3rem; /* dimunuzione font solo per coming soon */
+    padding: 11px 0;
+    margin: 13px auto;
     border-radius: 10px;
     border: none;
-    cursor: pointer;
+    cursor: default;
     width: 100%;
     max-width: 360px;
     font-weight: 900;
+    background: linear-gradient(120deg,#FFD74B,#FF896B 80%);
+    color: #b70036;
+    font-family: 'Arial Black', Gadget, sans-serif;
     box-shadow: 0 5px 14px rgba(0,0,0,0.15);
-    transition: transform 0.14s, box-shadow 0.14s, filter 0.14s;
+    text-shadow: 1px 1px 0 #fff, 0 0 6px #ffd74b;
+    letter-spacing: 2px;
+    position: relative;
+    opacity: 0.87;
+    pointer-events: none;
   }
-  button:hover {
-    transform: translateY(-5px) scale(1.03);
-    filter: brightness(1.13);
-    box-shadow: 0 13px 25px rgba(0,0,0,0.22);
-  }
-
-  /* Font BLOCKLETTER per Blockbuster */
-  @font-face {
-    font-family: 'Blockletter';
-    src: url('Blockletter.otf') format('opentype'),
-         url('Blockletter.ttf') format('truetype');
-    font-weight: normal;
-    font-style: normal;
+  /* Bottoni definiti (pulsanti normali) */
+  .btn-blockbuster, .btn-ner {
+    font-size: 2.4rem;
+    padding: 20px 0;
+    margin: 22px auto;
+    pointer-events: auto;
+    opacity: 1;
   }
   .btn-blockbuster {
     background: #1e2c5c;
@@ -69,8 +115,6 @@
     letter-spacing: 2px;
     text-shadow: 0 1px 0 #ffd900, 1px 2px 0 #000, 0 0 8px #1e2c5c;
   }
-
-  /* Font script/fucsia stile “Noi” per Non è la Rai */
   @import url('https://fonts.googleapis.com/css?family=Pacifico&display=swap');
   .btn-ner {
     background: linear-gradient(135deg,#f9e6fc 80%, #ed2685 130%);
@@ -86,9 +130,15 @@
 </head>
 <body>
 
-<header>
+<div class="logo-bg">
+  <div class="bollicine">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
   <img src="spuma.png" alt="Logo SPUMA" class="logo-spuma" />
-</header>
+</div>
 
 <main class="menu">
   <button class="btn-blockbuster" onclick="window.location.href='blockbuster.html'">
@@ -97,6 +147,10 @@
   <button class="btn-ner" onclick="window.location.href='nonelarai.html'">
     Non è la Rai
   </button>
+  <!-- Puntate non definite solo testo, font più piccolo -->
+  <button disabled>COMING SOON</button>
+  <button disabled>COMING SOON</button>
+  <button disabled>COMING SOON</button>
 </main>
 
 </body>
