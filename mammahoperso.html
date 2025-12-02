@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mamma Ho Perso l'Aereo - L'Analisi Cult</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Palette: Ispirata alla locandina originale. Rosso Natale, Giallo Logo, Blu Notte -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'kevin-red': '#D32F2F',    // Il rosso del logo
+                        'kevin-yellow': '#FFEB3B', // Il giallo del logo/sfondo urlo
+                        'kevin-blue': '#1A237E',   // Il blu della notte/inverno
+                        'snow-white': '#F5F5F5',
+                        'brick-dark': '#B71C1C',
+                    },
+                    fontFamily: {
+                        heading: ['Russo One', 'sans-serif'], // Font "Blockbuster" anni '90
+                        body: ['Lato', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'retro-yellow': '8px 8px 0px #FFEB3B',
+                        'retro-blue': '8px 8px 0px #1A237E',
+                        'retro-red': '8px 8px 0px #D32F2F',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        
+        /* Effetto neve sottile nello sfondo */
+        body {
+            background-color: #1A237E;
+            background-image: radial-gradient(#ffffff 1px, transparent 1px), radial-gradient(#ffffff 1px, transparent 1px);
+            background-size: 50px 50px;
+            background-position: 0 0, 25px 25px;
+            background-attachment: fixed;
+        }
+
+        .nav-button.active {
+            transform: scale(1.05) translateY(-2px);
+            filter: brightness(1.1);
+        }
+    </style>
+</head>
+<body class="font-body text-gray-800 antialiased selection:bg-kevin-yellow selection:text-kevin-red">
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <!-- HEADER STYLE LOCANDINA -->
+        <header class="text-center mb-10 bg-kevin-red p-6 rounded-xl border-4 border-kevin-yellow shadow-retro-yellow transform rotate-1 hover:rotate-0 transition-transform duration-300">
+            <h1 class="font-heading text-4xl sm:text-6xl text-kevin-yellow drop-shadow-md mb-2 uppercase tracking-wider">
+                Mamma, Ho Perso<br><span class="text-white">l'Aereo</span>
+            </h1>
+            <div class="inline-block bg-kevin-blue text-white font-heading px-4 py-1 rounded transform -rotate-2 mt-2 border-2 border-white">
+                CULTURA POP EDITION
+            </div>
+            <p class="font-bold text-white mt-4 text-lg">Storia di un film che ha cambiato gli anni '90 (e i nostri Natali).</p>
+        </header>
+
+        <!-- NAVIGAZIONE RIVISTA PER RACCONTARE LA STORIA -->
+        <nav id="navigation" class="flex flex-wrap justify-center gap-4 mb-8">
+            <!-- NUOVA TAB CONTESTO 1990 -->
+            <button data-target="context1990" class="nav-button font-heading text-lg bg-black text-kevin-yellow border-4 border-white py-3 px-6 rounded-lg shadow-retro-red hover:shadow-none transition-all duration-200">
+                📅 Il 1990
+            </button>
+            <button data-target="genesi" class="nav-button font-heading text-lg bg-white text-kevin-red border-4 border-kevin-red py-3 px-6 rounded-lg shadow-retro-blue hover:shadow-none transition-all duration-200">
+                💡 La Genesi
+            </button>
+            <button data-target="fenomeno" class="nav-button font-heading text-lg bg-kevin-yellow text-kevin-blue border-4 border-black py-3 px-6 rounded-lg shadow-retro-red hover:shadow-none transition-all duration-200">
+                🚀 Il Fenomeno
+            </button>
+            <button data-target="eredita" class="nav-button font-heading text-lg bg-kevin-blue text-white border-4 border-white py-3 px-6 rounded-lg shadow-retro-yellow hover:shadow-none transition-all duration-200">
+                👑 L'Eredità
+            </button>
+            <button data-target="extra" class="nav-button font-heading text-lg bg-brick-dark text-white border-4 border-kevin-yellow py-3 px-6 rounded-lg shadow-retro-blue hover:shadow-none transition-all duration-200">
+                🍿 Extra & 35°
+            </button>
+        </nav>
+
+        <!-- AREA CONTENUTO PRINCIPALE -->
+        <main id="content-area" class="bg-snow-white rounded-xl shadow-2xl border-4 border-black p-6 md:p-10 min-h-[40vh] relative overflow-hidden">
+            
+            <!-- Decorazione angolo -->
+            <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+
+            <!-- SEZIONE 0: CONTESTO 1990 (NUOVA) -->
+            <section id="context1990" class="content-section space-y-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">📼</span>
+                    <h2 class="font-heading text-3xl text-black">Cosa succedeva nel 1990?</h2>
+                </div>
+                <p class="text-lg leading-relaxed font-bold">
+                    Mentre Kevin veniva dimenticato a casa, il mondo stava cambiando per sempre. Era l'anno di confine tra la lacca degli anni '80 e il grunge degli anni '90.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <!-- Musica -->
+                    <div class="bg-white p-5 rounded-lg border-2 border-kevin-blue shadow-sm hover:shadow-md transition-shadow">
+                        <h3 class="font-heading text-xl text-kevin-blue mb-2 flex items-center gap-2">
+                            🎵 Hit Parade
+                        </h3>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center gap-2">
+                                <span class="bg-kevin-blue text-white px-2 rounded font-bold text-xs">POP</span>
+                                <strong>Madonna</strong> - "Vogue"
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="bg-kevin-yellow text-black px-2 rounded font-bold text-xs">RAP</span>
+                                <strong>MC Hammer</strong> - "U Can't Touch This"
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="bg-kevin-red text-white px-2 rounded font-bold text-xs">DANCE</span>
+                                <strong>Snap!</strong> - "The Power"
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Cinema -->
+                    <div class="bg-white p-5 rounded-lg border-2 border-kevin-red shadow-sm hover:shadow-md transition-shadow">
+                        <h3 class="font-heading text-xl text-kevin-red mb-2 flex items-center gap-2">
+                            🎬 Al Cinema
+                        </h3>
+                        <p class="text-sm mb-2">Oltre a Kevin, le sale erano dominate da:</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm font-semibold">
+                            <li>Ghost - Fantasma</li>
+                            <li>Pretty Woman</li>
+                            <li>Balla coi Lupi</li>
+                            <li>Edward Mani di Forbice</li>
+                            <li>Tartarughe Ninja alla riscossa</li>
+                        </ul>
+                    </div>
+
+                    <!-- Sport & Eventi -->
+                    <div class="bg-kevin-yellow/20 p-5 rounded-lg border-2 border-kevin-yellow md:col-span-2 shadow-sm">
+                        <h3 class="font-heading text-xl text-black mb-3 text-center">🌍 Il Mondo nel 1990</h3>
+                        <div class="grid sm:grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-3xl mb-1">⚽</div>
+                                <h4 class="font-bold text-sm">Notti Magiche</h4>
+                                <p class="text-xs">L'Italia ospita i Mondiali. Schillaci segna, la Germania Ovest vince.</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl mb-1">🧱</div>
+                                <h4 class="font-bold text-sm">Germania Unita</h4>
+                                <p class="text-xs">La riunificazione tedesca ufficiale (3 Ottobre). La fine di un'era.</p>
+                            </div>
+                            <div>
+                                <div class="text-3xl mb-1">✊</div>
+                                <h4 class="font-bold text-sm">Mandela Libero</h4>
+                                <p class="text-xs">Nelson Mandela viene liberato dopo 27 anni di prigionia.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TV & Cultura Pop -->
+                    <div class="bg-white p-5 rounded-lg border-2 border-black md:col-span-2 shadow-sm">
+                        <h3 class="font-heading text-xl text-gray-800 mb-2">📺 In TV: Nasce la Nuova Era</h3>
+                        <p class="text-sm">Mentre noi guardavamo il Drive In, negli USA debuttavano:</p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="bg-gray-200 px-3 py-1 rounded-full text-xs font-bold">Willy, il Principe di Bel-Air</span>
+                            <span class="bg-gray-200 px-3 py-1 rounded-full text-xs font-bold">Beverly Hills 90210</span>
+                            <span class="bg-gray-200 px-3 py-1 rounded-full text-xs font-bold">Twin Peaks</span>
+                            <span class="bg-gray-200 px-3 py-1 rounded-full text-xs font-bold">I Simpson (Stagione 1)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 1: LA GENESI (L'IDEA) -->
+            <section id="genesi" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">💡</span>
+                    <h2 class="font-heading text-3xl text-kevin-red">Tutto nacque da un'ansia</h2>
+                </div>
+                <p class="text-lg leading-relaxed font-bold">
+                    1989. John Hughes deve partire per l'Europa e fa una lista delle cose da non dimenticare. Scherzando pensa: "E se dimenticassi uno dei miei figli?".
+                </p>
+                <p class="text-lg leading-relaxed">
+                    Hughes scrisse la sceneggiatura in soli <strong>9 giorni</strong>. L'idea era semplice: trasformare la più grande paura di un bambino (restare solo) nella sua più grande fantasia (libertà totale + cibo spazzatura). Ma realizzarlo non fu facile.
+                </p>
+                
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-white p-6 rounded-lg border-2 border-kevin-blue shadow-lg">
+                        <h3 class="font-heading text-xl text-kevin-blue mb-2">Il Casting di Kevin</h3>
+                        <p class="mb-2">Chris Columbus (il regista) era scettico. Aveva già lavorato con Macaulay Culkin in <em>Io e zio Buck</em> e temeva di non essere obiettivo.</p>
+                        <p class="font-bold">Risultato:</p>
+                        <ul class="list-disc list-inside space-y-1 text-sm">
+                            <li>Videro oltre <strong>200 bambini</strong>.</li>
+                            <li>Nessuno aveva i tempi comici giusti.</li>
+                            <li>Alla fine tornarono da Macaulay. Era predestinato.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-kevin-yellow/20 p-6 rounded-lg border-2 border-kevin-yellow shadow-lg flex flex-col justify-center text-center">
+                        <h3 class="font-heading text-xl text-black mb-2">Budget vs Realtà</h3>
+                        <p class="text-sm italic mb-2">"Non funzionerà mai, chi vuole vedere un film su un bambino solo?"</p>
+                        <p class="text-lg">La Warner Bros cancellò il film perché sforava il budget di 14 milioni. La Fox lo raccolse al volo, portandolo a 18 milioni. Fu l'affare del secolo.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 2: IL FENOMENO (IL SUCCESSO) -->
+            <section id="fenomeno" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🚀</span>
+                    <h2 class="font-heading text-3xl text-kevin-blue">Il Boom del 1990</h2>
+                </div>
+                <p class="text-lg leading-relaxed">
+                    Uscito a novembre 1990, il film non fu solo un successo: occupò militarmente i cinema. Rimase al <strong>primo posto del box office per 12 settimane consecutive</strong>. Da Natale fino a Pasqua, la gente guardava ancora Kevin.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-kevin-red text-white p-5 rounded-lg border-b-8 border-black transform rotate-1">
+                        <h3 class="font-heading text-2xl mb-1">Macaulay-Mania</h3>
+                        <hr class="border-white/30 my-2">
+                        <p>Culkin divenne la prima "child star" globale dopo Shirley Temple. Il suo volto con la bocca aperta divenne l'icona degli anni '90, stampato su magliette, tazze e videogiochi impossibili da finire.</p>
+                    </div>
+
+                    <div class="bg-kevin-blue text-white p-5 rounded-lg border-b-8 border-black transform -rotate-1">
+                        <h3 class="font-heading text-2xl mb-1">Il Film Finto</h3>
+                        <hr class="border-white/30 my-2">
+                        <p>Tutti ricordano <em>"Angels with Filthy Souls"</em> ("Tieni il resto, lurido bastardo!"). Non esiste. Fu girato apposta per il film per parodiare i noir anni '40. È diventato così cult che molti cercano ancora di noleggiarlo.</p>
+                    </div>
+
+                    <div class="bg-kevin-yellow text-black p-5 rounded-lg border-b-8 border-black md:col-span-2">
+                        <h3 class="font-heading text-2xl mb-1">L'Impatto sul Cinema</h3>
+                        <p class="mt-2">Dopo *Home Alone*, Hollywood impazzì. Nacque il sottogenere <strong>"Bambino intelligente vs Adulti stupidi"</strong>. 
+                        <br>Senza Kevin McCallister non avremmo avuto: <em>Dennis la Minaccia</em>, <em>Baby Birba</em>, <em>Beethoven</em> e mezza filmografia anni '90.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: L'EREDITÀ (COSA CI HA LASCIATO) -->
+            <section id="eredita" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">👑</span>
+                    <h2 class="font-heading text-3xl text-black">Cosa ci ha lasciato (Legacy)</h2>
+                </div>
+                
+                <p class="text-center text-lg mb-6">Come ha plasmato la nostra cultura pop?</p>
+
+                <div class="chart-container">
+                    <canvas id="legacyChart"></canvas>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4 mt-8">
+                     <div class="flex gap-4 bg-white p-4 rounded border-l-8 border-kevin-red shadow-sm">
+                        <div class="text-4xl self-center">😱</div>
+                        <div>
+                            <h3 class="font-bold text-xl text-kevin-red">L'Urlo di Munch Pop</h3>
+                            <p>L'immagine di Kevin con le mani sulle guance non era nel copione. Macaulay improvvisò, dimenticando di togliere le mani prima di urlare. È diventata un meme universale per "Shock".</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 bg-white p-4 rounded border-l-8 border-kevin-blue shadow-sm">
+                        <div class="text-4xl self-center">🏠</div>
+                        <div>
+                            <h3 class="font-bold text-xl text-kevin-blue">La Casa dei Sogni</h3>
+                            <p>La villa dei McCallister a Chicago è diventata un personaggio a sé stante. Rappresenta l'apice del "Sogno Americano" suburbano degli anni '90. Oggi è una meta turistica.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: EXTRA E 35° ANNIVERSARIO -->
+            <section id="extra" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">🍿</span>
+                    <h2 class="font-heading text-3xl text-brick-dark">Curiosità & Il Ritorno</h2>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="bg-kevin-yellow/30 p-4 rounded border-2 border-kevin-yellow text-center">
+                        <h3 class="font-heading text-2xl text-black mb-2">35 Anni Dopo</h3>
+                        <p>Per celebrare il 35° anniversario, il film torna al cinema. È l'occasione per vedere i dettagli che in VHS ci eravamo persi.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-200">
+                            <h4 class="font-bold text-kevin-red">La Teoria di Elvis</h4>
+                            <p class="text-sm mt-1">Molti fan giurano che la comparsa barbuta dietro la madre di Kevin in aeroporto sia Elvis Presley (vivo). Columbus ha smentito, ma il mito resiste.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-200">
+                            <h4 class="font-bold text-kevin-blue">Lo Stuntman Trentenne</h4>
+                            <p class="text-sm mt-1">Macaulay era troppo piccolo per le cadute pericolose. Le scene d'azione furono girate da uno stuntman di 30 anni molto basso. In 4K si nota!</p>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-200">
+                            <h4 class="font-bold text-brick-dark">Joe Pesci il Metodo</h4>
+                            <p class="text-sm mt-1">Pesci evitava Culkin sul set per fargli credere di essere davvero cattivo. Una volta gli morse davvero un dito durante le prove.</p>
+                        </div>
+                        <div class="bg-white p-4 rounded shadow-sm border border-gray-200">
+                            <h4 class="font-bold text-black">Il Sadismo Realistico</h4>
+                            <p class="text-sm mt-1">Un medico ha confermato: nella realtà Harry e Marv sarebbero morti circa 3 volte a testa entro la fine del film.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-8 p-4 bg-white/10 backdrop-blur-sm rounded-lg border-t border-white/20 text-white">
+            <p class="font-heading uppercase tracking-widest text-sm text-kevin-yellow mb-1">Buon Natale, maledetto animale</p>
+            <p class="text-xs opacity-70">Un omaggio non ufficiale al capolavoro di John Hughes.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const chartCanvas = document.getElementById('legacyChart');
+
+            let myChart;
+
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Gestione Tab
+                        const targetId = button.dataset.target;
+                        sections.forEach(section => section.classList.add('hidden'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) targetSection.classList.remove('hidden');
+                        
+                        // Gestione Stili Bottoni
+                        buttons.forEach(btn => btn.classList.remove('scale-105', 'brightness-110', 'ring-2', 'ring-offset-2', 'ring-white'));
+                        button.classList.add('scale-105', 'brightness-110', 'ring-2', 'ring-offset-2', 'ring-white');
+                        
+                        // Inizializza Grafico se necessario (Solo nel tab Eredità)
+                        if (targetId === 'eredita' && !myChart) {
+                            initChart();
+                        }
+                    });
+                });
+                
+                // Attiva primo tab
+                if (buttons.length > 0) buttons[0].click();
+            }
+
+            function initChart() {
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    
+                    const data = {
+                        labels: ['Cloni Cinematografici', 'Meme & Citazioni', 'Colonna Sonora Natalizia', 'Nostalgia Generazionale'],
+                        datasets: [{
+                            label: 'Composizione Eredità Culturale',
+                            data: [30, 25, 20, 25],
+                            backgroundColor: [
+                                '#1A237E', // Blu
+                                '#FFEB3B', // Giallo
+                                '#D32F2F', // Rosso
+                                '#9E9E9E'  // Grigio
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    };
+
+                    const config = {
+                        type: 'doughnut',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: { family: 'Lato', size: 14 },
+                                        color: '#333'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ` ${context.label}: ${context.raw}% impatto`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    myChart = new Chart(ctx, config);
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
