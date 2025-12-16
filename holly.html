@@ -78,8 +78,8 @@
 </head>
 <body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
 
-    <!-- AUDIO PLAYER -->
-    <audio id="theme-audio" loop preload="auto">
+    <!-- AUDIO PLAYER (Aggiunto autoplay attribute come rinforzo) -->
+    <audio id="theme-audio" loop preload="auto" autoplay>
         <source src="holly_theme.mp3" type="audio/mpeg">
     </audio>
 
@@ -358,7 +358,7 @@
                 musicToggle.style.color = '#fff';
                 musicToggle.title = "File audio non trovato o errore formato";
                 // Opzionale: alert immediato
-                alert("Errore Audio: Assicurati che il file 'holly_theme.mp3' sia presente nella cartella corretta.");
+                // alert("Errore Audio: Assicurati che il file 'holly_theme.mp3' sia presente nella cartella corretta.");
             });
 
             function updateMusicIcon(playing) {
@@ -381,8 +381,7 @@
                         .then(() => updateMusicIcon(true))
                         .catch(error => {
                             console.log("Play failed (expected if no user interaction yet or file missing):", error);
-                            // Non forziamo l'icona a 'false' qui se è un problema di interazione, 
-                            // ma se il file manca, l'evento 'error' sopra gestirà l'UI.
+                            // Non forziamo l'icona a 'false' qui se è un problema di interazione
                             updateMusicIcon(false);
                         });
                 }
@@ -396,7 +395,6 @@
             musicToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
                 
-                // Se c'è stato un errore nel caricamento, non facciamo nulla o ri-notifichiamo
                 if (audio.error) {
                     alert("Impossibile riprodurre: file audio mancante o corrotto.");
                     return;
@@ -406,16 +404,27 @@
                 else safePause();
             });
 
-            // Tentativo Autoplay + Fallback
-            const autoPlayPromise = audio.play();
-            if (autoPlayPromise !== undefined) {
-                autoPlayPromise.then(() => updateMusicIcon(true)).catch(() => {
+            // --- AUTOPLAY AGGRESSIVO CON FALLBACK ---
+            // 1. Proviamo a far partire l'audio subito
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Successo! (Raro nei browser moderni senza interazione)
+                    updateMusicIcon(true);
+                }).catch(error => {
+                    // Fallito (blocco browser). Mettiamo un listener sul body.
+                    console.log("Autoplay blocked. Waiting for ANY click.");
                     updateMusicIcon(false);
-                    const playOnInteraction = () => {
+                    
+                    const startAudioOnInteraction = () => {
                         safePlay();
-                        document.removeEventListener('click', playOnInteraction);
+                        // Rimuoviamo il listener dopo il primo successo
+                        document.body.removeEventListener('click', startAudioOnInteraction);
                     };
-                    document.addEventListener('click', playOnInteraction, { once: true });
+                    
+                    // Aggiungi listener a tutto il body (non solo document) per catturare qualsiasi click
+                    document.body.addEventListener('click', startAudioOnInteraction, { once: true });
                 });
             }
 
