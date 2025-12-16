@@ -78,8 +78,11 @@
 </head>
 <body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
 
-    <!-- AUDIO PLAYER (Sorgente diretta per affidabilità) -->
-    <audio id="theme-audio" loop preload="auto" src="holly_theme.mp3"></audio>
+    <!-- AUDIO PLAYER HIDDEN (Struttura ripristinata come esempio funzionante) -->
+    <audio id="theme-audio" loop>
+        <source src="holly_theme.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+    </audio>
 
     <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
 
@@ -339,124 +342,101 @@
             const buttons = document.querySelectorAll('.nav-button');
             const sections = document.querySelectorAll('.content-section');
             const chartCanvas = document.getElementById('episodeChart');
-            
-            // Audio Logic Bulletproof
             const audio = document.getElementById('theme-audio');
             const musicToggle = document.getElementById('music-toggle');
             const musicIcon = document.getElementById('music-icon');
-            
-            // Set volume più alto
-            audio.volume = 0.5;
 
-            // DIAGNOSTICA ERRORI
-            audio.addEventListener('error', (e) => {
-                console.error("AUDIO ERROR EVENT:", audio.error);
-                let msg = "Errore Sconosciuto";
-                if(audio.error) {
-                    switch(audio.error.code) {
-                        case 1: msg = "Caricamento interrotto (ABORTED)"; break;
-                        case 2: msg = "Errore di rete (NETWORK)"; break;
-                        case 3: msg = "File corrotto o non supportato (DECODE)"; break;
-                        case 4: msg = "File non trovato (SRC NOT SUPPORTED/404)"; break;
-                    }
-                }
-                
-                // Aggiorna UI per segnalare l'errore
-                musicToggle.style.backgroundColor = '#ef4444'; // Red
-                musicToggle.title = "Errore: " + msg;
-                musicIcon.textContent = '⚠️';
-            });
+            let myChart;
+            
+            // --- AUDIO LOGIC (Robust Fix for AbortError) ---
+            audio.volume = 0.5; // Volume leggermente più alto
 
             function updateMusicIcon(playing) {
                 if (playing) {
-                    musicIcon.textContent = '⚽'; // Pallone che rimbalza
+                    musicIcon.textContent = '⚽';
                     musicToggle.classList.add('music-playing', 'bg-muppett-yellow');
                     musicToggle.classList.remove('bg-white');
-                    musicToggle.title = "Pausa Musica";
                 } else {
                     musicIcon.textContent = '🔇';
                     musicToggle.classList.remove('music-playing', 'bg-muppett-yellow');
                     musicToggle.classList.add('bg-white');
-                    musicToggle.title = "Attiva Musica";
                 }
             }
 
-            // Funzione di riproduzione con gestione aggressiva degli errori
-            const attemptPlay = async (fromButton = false) => {
-                try {
-                    await audio.play();
-                    updateMusicIcon(true);
-                } catch (err) {
-                    console.log("Play failed:", err);
-                    updateMusicIcon(false);
-                    
-                    // Se l'utente ha cliccato esplicitamente e fallisce, mostriamo perché
-                    if (fromButton) {
-                        if (err.name === 'NotAllowedError') {
-                            alert("Il browser sta bloccando l'audio. Riprova a cliccare.");
-                        } else if (err.name === 'NotSupportedError') {
-                             alert("Formato audio non supportato o file mancante.");
-                        } else {
-                            // Se fallisce, proviamo a ricaricare la risorsa e riprovare
-                            console.log("Tentativo di reload...");
-                            audio.load();
-                            try {
-                                await audio.play();
-                                updateMusicIcon(true);
-                            } catch (retryErr) {
-                                alert("Impossibile riprodurre l'audio. Errore: " + retryErr.message + "\nControlla che il file 'holly_theme.mp3' sia corretto.");
-                            }
-                        }
-                    }
+            // Funzione sicura per avviare l'audio e gestire promise rejection
+            const safePlay = () => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            updateMusicIcon(true);
+                        })
+                        .catch(error => {
+                            console.log("Audio play prevented or interrupted (normal in modern browsers):", error);
+                            // Non aggiorniamo l'icona se fallisce, o la rimettiamo a muto
+                            updateMusicIcon(false);
+                        });
                 }
             };
 
-            const toggleMusic = () => {
-                if (audio.paused) {
-                    attemptPlay(true);
-                } else {
-                    audio.pause();
-                    updateMusicIcon(false);
-                }
+            const safePause = () => {
+                audio.pause();
+                updateMusicIcon(false);
             };
 
+            // Toggle logic con controllo stato
             musicToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
-                toggleMusic();
+                if (audio.paused) {
+                    safePlay();
+                } else {
+                    safePause();
+                }
             });
 
-            // Tenta autoplay all'avvio
-            attemptPlay(false);
+            // Autoplay logic all'avvio
+            // Proviamo a riprodurre. Se fallisce (per policy browser), aggiungiamo listener.
+            const autoPlayPromise = audio.play();
+            if (autoPlayPromise !== undefined) {
+                autoPlayPromise
+                    .then(() => {
+                        updateMusicIcon(true);
+                    })
+                    .catch(error => {
+                        console.log("Autoplay blocked by browser. Waiting for user interaction.");
+                        updateMusicIcon(false);
+                        
+                        // Fallback: Avvia al primo click sulla pagina
+                        const playOnInteraction = () => {
+                            safePlay();
+                            document.removeEventListener('click', playOnInteraction);
+                        };
+                        document.addEventListener('click', playOnInteraction, { once: true });
+                    });
+            }
 
-            // Fallback al primo click sul body se autoplay fallisce
-            const bodyClickListener = () => {
-                if (audio.paused) {
-                    attemptPlay(false);
-                }
-                document.body.removeEventListener('click', bodyClickListener);
-            };
-            document.body.addEventListener('click', bodyClickListener, { once: true });
-
-            // Navigation Logic
-            let myChart;
-
+            // --- NAVIGATION LOGIC ---
             function initNavigation() {
                 buttons.forEach(button => {
                     button.addEventListener('click', () => {
+                        // Gestione Tab
                         const targetId = button.dataset.target;
                         sections.forEach(section => section.classList.add('hidden'));
                         const targetSection = document.getElementById(targetId);
                         if (targetSection) targetSection.classList.remove('hidden');
                         
+                        // Gestione Stili Bottoni
                         buttons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
                         
+                        // Inizializza Grafico se necessario (Solo nel tab Eredità)
                         if (targetId === 'eredita' && !myChart) {
                             initChart();
                         }
                     });
                 });
                 
+                // Attiva primo tab
                 if (buttons.length > 0) buttons[0].click();
             }
 
