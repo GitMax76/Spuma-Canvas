@@ -78,10 +78,8 @@
 </head>
 <body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
 
-    <!-- AUDIO PLAYER (Aggiunto autoplay attribute come rinforzo) -->
-    <audio id="theme-audio" loop preload="auto" autoplay>
-        <source src="holly_theme.mp3" type="audio/mpeg">
-    </audio>
+    <!-- AUDIO PLAYER (Sorgente diretta per affidabilità) -->
+    <audio id="theme-audio" loop preload="auto" src="holly_theme.mp3"></audio>
 
     <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
 
@@ -90,8 +88,8 @@
             <!-- Speed lines background overlay -->
             <div class="absolute inset-0 bg-speed-lines opacity-30 pointer-events-none"></div>
 
-            <!-- Pulsante Controllo Musica (Z-Index aumentato a 50) -->
-            <button id="music-toggle" class="absolute top-4 right-4 bg-white text-ball-black rounded-full p-2 border-2 border-ball-black shadow-sm hover:bg-muppett-yellow transition-colors z-50 cursor-pointer" title="Sigla">
+            <!-- Pulsante Controllo Musica (Z-Index 50) -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-white text-ball-black rounded-full p-2 border-2 border-ball-black shadow-sm hover:bg-muppett-yellow transition-colors z-50 cursor-pointer" title="Clicca per attivare la musica">
                 <span id="music-icon">🔇</span>
             </button>
 
@@ -342,23 +340,31 @@
             const sections = document.querySelectorAll('.content-section');
             const chartCanvas = document.getElementById('episodeChart');
             
-            // Audio Logic
+            // Audio Logic Bulletproof
             const audio = document.getElementById('theme-audio');
             const musicToggle = document.getElementById('music-toggle');
             const musicIcon = document.getElementById('music-icon');
             
-            // Set volume
-            audio.volume = 0.2;
+            // Set volume più alto
+            audio.volume = 0.5;
 
-            // Error listener for file issues
+            // DIAGNOSTICA ERRORI
             audio.addEventListener('error', (e) => {
-                console.error("Audio Error:", e);
-                // Feedback visuale per l'utente
-                musicToggle.style.backgroundColor = '#ef4444'; // Rosso errore
-                musicToggle.style.color = '#fff';
-                musicToggle.title = "File audio non trovato o errore formato";
-                // Opzionale: alert immediato
-                // alert("Errore Audio: Assicurati che il file 'holly_theme.mp3' sia presente nella cartella corretta.");
+                console.error("AUDIO ERROR EVENT:", audio.error);
+                let msg = "Errore Sconosciuto";
+                if(audio.error) {
+                    switch(audio.error.code) {
+                        case 1: msg = "Caricamento interrotto (ABORTED)"; break;
+                        case 2: msg = "Errore di rete (NETWORK)"; break;
+                        case 3: msg = "File corrotto o non supportato (DECODE)"; break;
+                        case 4: msg = "File non trovato (SRC NOT SUPPORTED/404)"; break;
+                    }
+                }
+                
+                // Aggiorna UI per segnalare l'errore
+                musicToggle.style.backgroundColor = '#ef4444'; // Red
+                musicToggle.title = "Errore: " + msg;
+                musicIcon.textContent = '⚠️';
             });
 
             function updateMusicIcon(playing) {
@@ -366,67 +372,70 @@
                     musicIcon.textContent = '⚽'; // Pallone che rimbalza
                     musicToggle.classList.add('music-playing', 'bg-muppett-yellow');
                     musicToggle.classList.remove('bg-white');
+                    musicToggle.title = "Pausa Musica";
                 } else {
                     musicIcon.textContent = '🔇';
                     musicToggle.classList.remove('music-playing', 'bg-muppett-yellow');
                     musicToggle.classList.add('bg-white');
+                    musicToggle.title = "Attiva Musica";
                 }
             }
 
-            // Funzione sicura play
-            const safePlay = () => {
-                const playPromise = audio.play();
-                if (playPromise !== undefined) {
-                    playPromise
-                        .then(() => updateMusicIcon(true))
-                        .catch(error => {
-                            console.log("Play failed (expected if no user interaction yet or file missing):", error);
-                            // Non forziamo l'icona a 'false' qui se è un problema di interazione
-                            updateMusicIcon(false);
-                        });
+            // Funzione di riproduzione con gestione aggressiva degli errori
+            const attemptPlay = async (fromButton = false) => {
+                try {
+                    await audio.play();
+                    updateMusicIcon(true);
+                } catch (err) {
+                    console.log("Play failed:", err);
+                    updateMusicIcon(false);
+                    
+                    // Se l'utente ha cliccato esplicitamente e fallisce, mostriamo perché
+                    if (fromButton) {
+                        if (err.name === 'NotAllowedError') {
+                            alert("Il browser sta bloccando l'audio. Riprova a cliccare.");
+                        } else if (err.name === 'NotSupportedError') {
+                             alert("Formato audio non supportato o file mancante.");
+                        } else {
+                            // Se fallisce, proviamo a ricaricare la risorsa e riprovare
+                            console.log("Tentativo di reload...");
+                            audio.load();
+                            try {
+                                await audio.play();
+                                updateMusicIcon(true);
+                            } catch (retryErr) {
+                                alert("Impossibile riprodurre l'audio. Errore: " + retryErr.message + "\nControlla che il file 'holly_theme.mp3' sia corretto.");
+                            }
+                        }
+                    }
                 }
             };
 
-            const safePause = () => {
-                audio.pause();
-                updateMusicIcon(false);
+            const toggleMusic = () => {
+                if (audio.paused) {
+                    attemptPlay(true);
+                } else {
+                    audio.pause();
+                    updateMusicIcon(false);
+                }
             };
 
             musicToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
-                
-                if (audio.error) {
-                    alert("Impossibile riprodurre: file audio mancante o corrotto.");
-                    return;
-                }
-
-                if (audio.paused) safePlay();
-                else safePause();
+                toggleMusic();
             });
 
-            // --- AUTOPLAY AGGRESSIVO CON FALLBACK ---
-            // 1. Proviamo a far partire l'audio subito
-            const playPromise = audio.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Successo! (Raro nei browser moderni senza interazione)
-                    updateMusicIcon(true);
-                }).catch(error => {
-                    // Fallito (blocco browser). Mettiamo un listener sul body.
-                    console.log("Autoplay blocked. Waiting for ANY click.");
-                    updateMusicIcon(false);
-                    
-                    const startAudioOnInteraction = () => {
-                        safePlay();
-                        // Rimuoviamo il listener dopo il primo successo
-                        document.body.removeEventListener('click', startAudioOnInteraction);
-                    };
-                    
-                    // Aggiungi listener a tutto il body (non solo document) per catturare qualsiasi click
-                    document.body.addEventListener('click', startAudioOnInteraction, { once: true });
-                });
-            }
+            // Tenta autoplay all'avvio
+            attemptPlay(false);
+
+            // Fallback al primo click sul body se autoplay fallisce
+            const bodyClickListener = () => {
+                if (audio.paused) {
+                    attemptPlay(false);
+                }
+                document.body.removeEventListener('click', bodyClickListener);
+            };
+            document.body.addEventListener('click', bodyClickListener, { once: true });
 
             // Navigation Logic
             let myChart;
