@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holly & Benji - La Fisica Non Esiste</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Palette: Ispirata alle maglie della New Team, Toho e al campo da calcio -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'field-green': '#4ADE80',  // Il verde brillante del campo
+                        'newteam-white': '#F8FAFC', // Bianco maglia Holly
+                        'newteam-blue': '#3B82F6',  // Blu righe Holly
+                        'toho-dark': '#1E3A8A',     // Blu scuro Mark Lenders
+                        'ball-black': '#171717',    // Nero pallone
+                        'muppett-yellow': '#FACC15' // Giallo Danny Mellow
+                    },
+                    fontFamily: {
+                        heading: ['Bangers', 'cursive'], // Font fumettoso/action
+                        body: ['Roboto Condensed', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'manga': '6px 6px 0px #171717',
+                        'speed': '6px 6px 0px #3B82F6',
+                    },
+                    backgroundImage: {
+                        'speed-lines': "repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px)"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        
+        body {
+            background-color: #f0f9ff;
+            /* Pattern a righe sottili stile manga */
+            background-image: linear-gradient(0deg, transparent 24%, rgba(0, 0, 0, .03) 25%, rgba(0, 0, 0, .03) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .03) 75%, rgba(0, 0, 0, .03) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 0, 0, .03) 25%, rgba(0, 0, 0, .03) 26%, transparent 27%, transparent 74%, rgba(0, 0, 0, .03) 75%, rgba(0, 0, 0, .03) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+        }
+
+        .nav-button.active {
+            transform: skew(-10deg) scale(1.05);
+            background-color: #1E3A8A; /* Toho Dark */
+            color: #FACC15; /* Yellow */
+            border-color: #171717;
+        }
+
+        .manga-panel {
+            clip-path: polygon(0% 0%, 100% 0%, 98% 100%, 2% 100%);
+        }
+        
+        /* Animazione pulsante musica */
+        @keyframes bounce-ball {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .music-playing {
+            animation: bounce-ball 0.5s infinite;
+        }
+    </style>
+</head>
+<body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
+
+    <!-- AUDIO PLAYER -->
+    <audio id="theme-audio" loop>
+        <source src="holly_theme.mp3" type="audio/mpeg">
+        <!-- Fallback silenzioso se il file non esiste, per evitare errori console -->
+    </audio>
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <!-- HEADER STYLE MANGA -->
+        <header class="text-center mb-8 bg-gradient-to-r from-newteam-blue to-toho-dark p-8 rounded-xl border-4 border-ball-black shadow-manga relative overflow-hidden">
+            <!-- Speed lines background overlay -->
+            <div class="absolute inset-0 bg-speed-lines opacity-30 pointer-events-none"></div>
+
+            <!-- Pulsante Controllo Musica -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-white text-ball-black rounded-full p-2 border-2 border-ball-black shadow-sm hover:bg-muppett-yellow transition-colors z-10" title="Sigla">
+                <span id="music-icon">🔇</span>
+            </button>
+
+            <h1 class="font-heading text-5xl sm:text-7xl text-white drop-shadow-[4px_4px_0_#000] mb-2 uppercase tracking-wider skew-x-[-5deg]">
+                Holly & Benji
+            </h1>
+            <div class="inline-block bg-muppett-yellow text-ball-black font-heading px-6 py-2 transform rotate-2 border-2 border-ball-black text-xl shadow-sm">
+                Captain Tsubasa Analysis
+            </div>
+            <!-- CITAZIONE AGGIORNATA -->
+            <p class="font-bold text-white mt-4 text-xl italic tracking-wide">"Due sportivi, due ragazzi, per il calcio sono pazzi..."</p>
+        </header>
+
+        <!-- NAVIGAZIONE -->
+        <nav id="navigation" class="flex flex-wrap justify-center gap-4 mb-8">
+            <button data-target="context1986" class="nav-button font-heading text-xl bg-white text-ball-black border-2 border-ball-black py-2 px-6 shadow-speed transition-all duration-200 transform skew-x-[-10deg]">
+                📅 1986
+            </button>
+            <button data-target="genesi" class="nav-button font-heading text-xl bg-field-green text-ball-black border-2 border-ball-black py-2 px-6 shadow-speed transition-all duration-200 transform skew-x-[-10deg]">
+                ✍️ L'Autore
+            </button>
+            <button data-target="fisica" class="nav-button font-heading text-xl bg-toho-dark text-white border-2 border-ball-black py-2 px-6 shadow-speed transition-all duration-200 transform skew-x-[-10deg]">
+                📐 La Fisica
+            </button>
+            <button data-target="impatto" class="nav-button font-heading text-xl bg-newteam-blue text-white border-2 border-ball-black py-2 px-6 shadow-speed transition-all duration-200 transform skew-x-[-10deg]">
+                🌏 L'Impatto
+            </button>
+             <button data-target="eredita" class="nav-button font-heading text-xl bg-muppett-yellow text-ball-black border-2 border-ball-black py-2 px-6 shadow-speed transition-all duration-200 transform skew-x-[-10deg]">
+                🏆 L'Eredità
+            </button>
+        </nav>
+
+        <!-- AREA CONTENUTO PRINCIPALE -->
+        <main id="content-area" class="bg-white rounded-lg border-4 border-ball-black p-6 md:p-10 min-h-[50vh] relative shadow-2xl">
+            
+            <!-- SEZIONE 0: IL CONTESTO 1986 (ARRIVO IN ITALIA) -->
+            <section id="context1986" class="content-section space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-field-green pb-2">
+                    <span class="text-4xl">🇮🇹</span>
+                    <h2 class="font-heading text-4xl text-ball-black uppercase">Luglio 1986: L'Invasione</h2>
+                </div>
+                <p class="text-xl leading-relaxed font-bold">
+                    Mentre l'Italia smaltiva la delusione dei Mondiali in Messico, su Italia 1 sbarcava un alieno con il pallone incollato al piede.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <!-- Musica e TV -->
+                    <div class="bg-gray-100 p-5 border-l-8 border-newteam-blue">
+                        <h3 class="font-heading text-2xl text-newteam-blue mb-2">🎵 Hit & TV del 1986</h3>
+                        <ul class="space-y-3 text-lg">
+                            <li class="flex items-center gap-2">
+                                <span class="bg-ball-black text-white px-2 text-sm font-bold skew-x-[-10deg]">ROCK</span>
+                                <strong>Europe</strong> - "The Final Countdown"
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="bg-muppett-yellow text-black px-2 text-sm font-bold skew-x-[-10deg]">POP</span>
+                                <strong>Madonna</strong> - "Papa Don't Preach"
+                            </li>
+                            <li class="flex items-center gap-2">
+                                <span class="bg-field-green text-black px-2 text-sm font-bold skew-x-[-10deg]">BIM BUM BAM</span>
+                                Paolo Bonolis lanciava i cartoni mangiando pane e marmellata con Uan.
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Sport -->
+                    <div class="bg-gray-100 p-5 border-l-8 border-field-green">
+                        <h3 class="font-heading text-2xl text-field-green mb-2">⚽ Il Calcio Reale</h3>
+                        <p class="mb-2">Mentre Holly sognava il Brasile, nel mondo reale:</p>
+                        <div class="space-y-2">
+                            <div class="bg-white p-2 border border-gray-300 shadow-sm">
+                                <strong>Maradona</strong> segnava il "Gol del Secolo" e la "Mano de Dios" in Messico.
+                            </div>
+                            <div class="bg-white p-2 border border-gray-300 shadow-sm">
+                                La <strong>Juventus</strong> di Platini vinceva lo Scudetto.
+                            </div>
+                            <div class="bg-white p-2 border border-gray-300 shadow-sm">
+                                <strong>Silvio Berlusconi</strong> aveva appena comprato il Milan (Febbraio '86).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 1: LA GENESI (L'AUTORE) -->
+            <section id="genesi" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-toho-dark pb-2">
+                    <span class="text-4xl">🇯🇵</span>
+                    <h2 class="font-heading text-4xl text-ball-black uppercase">Yoichi Takahashi</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-lg leading-relaxed mb-4">
+                            <strong>1978.</strong> Un giovane disegnatore giapponese guarda i Mondiali in Argentina in TV. Vede i coriandoli, la passione, la velocità. In Giappone il calcio è uno sport minore (dominava il baseball), ma lui decide di cambiarlo.
+                        </p>
+                        <p class="text-lg leading-relaxed">
+                            Nasce così <em>Captain Tsubasa</em> (1981 su Shonen Jump). L'idea di Takahashi era semplice: rendere il calcio spettacolare come un combattimento tra samurai.
+                        </p>
+                    </div>
+                    <div class="bg-ball-black text-white p-6 transform skew-y-[-2deg] shadow-lg">
+                        <h3 class="font-heading text-yellow-400 text-2xl mb-3">L'Adattamento Italiano</h3>
+                        <ul class="list-disc list-inside space-y-2 font-mono text-sm">
+                            <li><strong>Oliver Hutton:</strong> Tsubasa Ozora (Grandi Ali del Cielo)</li>
+                            <li><strong>Benji Price:</strong> Genzo Wakabayashi</li>
+                            <li><strong>Mark Lenders:</strong> Kojiro Hyuga</li>
+                            <li><strong>New Team:</strong> Nankatsu</li>
+                            <li><strong>Muppett:</strong> Meiwa</li>
+                        </ul>
+                        <p class="mt-4 text-xs text-gray-400 border-t border-gray-600 pt-2">I nomi furono "anglicizzati" da Mediaset per renderli più familiari al pubblico occidentale.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 2: LA FISICA (CURIOSITÀ) -->
+            <section id="fisica" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-muppett-yellow pb-2">
+                    <span class="text-4xl">📐</span>
+                    <h2 class="font-heading text-4xl text-ball-black uppercase">La Fisica Non Esiste</h2>
+                </div>
+                
+                <p class="text-lg italic text-center mb-6">"Perché vedo la curvatura terrestre se sto solo correndo verso l'area di rigore?"</p>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <!-- Card 1 -->
+                    <div class="border-4 border-black p-4 bg-white shadow-manga hover:-translate-y-2 transition-transform">
+                        <h3 class="font-heading text-2xl text-toho-dark">Il Campo Infinito</h3>
+                        
+                        <p class="mt-2 text-sm">Un calcolo fatto da un fisico ha stimato che, per vedere l'orizzonte curvare come nell'anime, il campo dovrebbe essere lungo circa <strong>18 km</strong>. I giocatori correvano a 150 km/h.</p>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="border-4 border-black p-4 bg-white shadow-manga hover:-translate-y-2 transition-transform">
+                        <h3 class="font-heading text-2xl text-newteam-blue">La Palla Ovale</h3>
+                        <p class="mt-2 text-sm">Quando Mark Lenders (Hyuga) caricava il "Tiro della Tigre", il pallone sfidava la legge di conservazione della massa, diventando un uovo bidimensionale capace di sfondare muri di cemento.</p>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="border-4 border-black p-4 bg-white shadow-manga hover:-translate-y-2 transition-transform">
+                        <h3 class="font-heading text-2xl text-field-green">La Catapulta Infernale</h3>
+                        <p class="mt-2 text-sm">I gemelli Derrick. Uno si sdraia a terra, l'altro gli salta sui piedi e viene lanciato in stratosfera. Fallo? Gioco pericoloso? No, gol spettacolare.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: L'IMPATTO (CULTURA) -->
+            <section id="impatto" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-newteam-blue pb-2">
+                    <span class="text-4xl">🌏</span>
+                    <h2 class="font-heading text-4xl text-ball-black uppercase">Più di un Cartone</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-blue-50 p-6 border-l-8 border-toho-dark">
+                        <h3 class="font-heading text-2xl text-toho-dark mb-2">Hanno iniziato per Holly</h3>
+                        <p class="mb-4">Non è un'esagerazione. Alcuni dei più grandi campioni della storia hanno dichiarato di aver iniziato a giocare grazie a questo anime:</p>
+                        <ul class="space-y-2 font-bold text-gray-700">
+                            <li>🇪🇸 Andrés Iniesta ("Volevo essere Holly")</li>
+                            <li>🇪🇸 Fernando Torres</li>
+                            <li>🇮🇹 Alessandro Del Piero</li>
+                            <li>🇫🇷 Zinedine Zidane</li>
+                            <li>🇯🇵 Hidetoshi Nakata</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-heading text-2xl text-field-green mb-2">Il Boom Giapponese</h3>
+                        <p class="mb-4 text-lg">Prima di Tsubasa, il Giappone non aveva nemmeno una lega professionistica (J-League nata nel 1993). Dopo il manga, il numero di bambini iscritti alle scuole calcio è triplicato in 5 anni.</p>
+                        <div class="bg-yellow-100 p-4 border-2 border-yellow-400 rounded transform rotate-1">
+                            <p class="font-bold text-center">Takahashi è considerato il "Padre del Calcio Giapponese Moderno".</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: EREDITA' (CHART + ARTRIBUNE) -->
+            <section id="eredita" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-muppett-yellow pb-2">
+                    <span class="text-4xl">🏆</span>
+                    <h2 class="font-heading text-4xl text-ball-black uppercase">Statistiche & Analisi 2025</h2>
+                </div>
+
+                <div class="chart-container mb-8">
+                    <canvas id="episodeChart"></canvas>
+                </div>
+
+                <!-- NUOVO BLOCCO ARTRIBUNE -->
+                <div class="bg-white border-4 border-black p-6 shadow-manga relative mt-8">
+                    <div class="absolute -top-4 left-4 bg-newteam-blue text-white px-4 py-1 font-heading text-lg transform -skew-x-10">
+                        📰 L'Analisi (Gennaio 2025)
+                    </div>
+                    <p class="text-sm text-gray-500 mb-2 italic text-right">Fonte: Artribune, 11/01/2025</p>
+                    <h3 class="font-heading text-2xl mb-3">Una "Geografia Sentimentale"</h3>
+                    <p class="text-lg leading-relaxed mb-4">
+                        A oltre 40 anni dal debutto, l'opera conserva una freschezza sorprendente. Non è solo calcio: è un ponte emotivo tra i giovani e l'impresa sportiva.
+                        Come sottolineato da Thomas Villa, il manga ha creato una <strong>"geografia sentimentale dello sport"</strong>, un caleidoscopio dove il confine fra realtà e mito si annulla.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-gray-50 p-4 rounded border border-gray-200">
+                        <div>
+                            <span class="font-bold block text-toho-dark">Realtà vs Mito:</span>
+                            <ul class="text-sm space-y-1 mt-1">
+                                <li><strong>Rivaul</strong> → Rivaldo</li>
+                                <li><strong>Juan Diaz</strong> → Maradona</li>
+                                <li><strong>Karl Heinz Schneider</strong> → Rummenigge</li>
+                            </ul>
+                        </div>
+                        <div class="flex items-center">
+                            <p class="text-sm italic border-l-4 border-muppett-yellow pl-3">
+                                "Un abbraccio infinito attorno a un pallone che non smette mai di rotolare."
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STATS BOTTOM -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 text-center">
+                    <div class="p-2 bg-gray-100 rounded border border-gray-300">
+                        <div class="text-2xl font-heading text-blue-600">3 Settimane</div>
+                        <div class="text-xs">Durata media partita</div>
+                    </div>
+                    <div class="p-2 bg-gray-100 rounded border border-gray-300">
+                        <div class="text-2xl font-heading text-red-600">10 Minuti</div>
+                        <div class="text-xs">Palla in aria (pensieri)</div>
+                    </div>
+                    <div class="p-2 bg-gray-100 rounded border border-gray-300">
+                        <div class="text-2xl font-heading text-yellow-600">∞</div>
+                        <div class="text-xs">Parate di Ed Warner</div>
+                    </div>
+                    <div class="p-2 bg-gray-100 rounded border border-gray-300">
+                        <div class="text-2xl font-heading text-green-600">1</div>
+                        <div class="text-xs">Amico del pallone</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-8 p-4 bg-ball-black text-white rounded-lg skew-x-[-5deg]">
+            <p class="font-heading uppercase tracking-widest text-lg text-muppett-yellow mb-1">Palla al centro per Holly!</p>
+            <p class="text-xs opacity-70 font-mono">© 1986-2025 Fan Made Analysis. Nessun legamento crociato è stato rotto durante la codifica.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const chartCanvas = document.getElementById('episodeChart');
+            
+            // Audio Logic
+            const audio = document.getElementById('theme-audio');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+            
+            // Set volume basso per non assordare
+            audio.volume = 0.2;
+
+            function updateMusicIcon(playing) {
+                if (playing) {
+                    musicIcon.textContent = '⚽'; // Pallone che rimbalza
+                    musicToggle.classList.add('music-playing', 'bg-muppett-yellow');
+                    musicToggle.classList.remove('bg-white');
+                } else {
+                    musicIcon.textContent = '🔇';
+                    musicToggle.classList.remove('music-playing', 'bg-muppett-yellow');
+                    musicToggle.classList.add('bg-white');
+                }
+            }
+
+            // Funzione sicura play
+            const safePlay = () => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => updateMusicIcon(true))
+                        .catch(error => {
+                            console.log("Autoplay blocked:", error);
+                            updateMusicIcon(false);
+                        });
+                }
+            };
+
+            const safePause = () => {
+                audio.pause();
+                updateMusicIcon(false);
+            };
+
+            musicToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (audio.paused) safePlay();
+                else safePause();
+            });
+
+            // Tentativo Autoplay + Fallback
+            const autoPlayPromise = audio.play();
+            if (autoPlayPromise !== undefined) {
+                autoPlayPromise.then(() => updateMusicIcon(true)).catch(() => {
+                    updateMusicIcon(false);
+                    const playOnInteraction = () => {
+                        safePlay();
+                        document.removeEventListener('click', playOnInteraction);
+                    };
+                    document.addEventListener('click', playOnInteraction, { once: true });
+                });
+            }
+
+            // Navigation Logic
+            let myChart;
+
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+                        sections.forEach(section => section.classList.add('hidden'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) targetSection.classList.remove('hidden');
+                        
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        button.classList.add('active');
+                        
+                        if (targetId === 'eredita' && !myChart) {
+                            initChart();
+                        }
+                    });
+                });
+                
+                if (buttons.length > 0) buttons[0].click();
+            }
+
+            function initChart() {
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    
+                    const data = {
+                        labels: ['Corsa (Campo Infinito)', 'Flashback Tristi', 'Monologhi Interiori', 'Gioco Effettivo'],
+                        datasets: [{
+                            label: 'Composizione Episodio',
+                            data: [40, 25, 25, 10],
+                            backgroundColor: [
+                                '#4ADE80', // Verde Campo
+                                '#1E3A8A', // Blu Scuro (Tristezza/Flashback)
+                                '#FACC15', // Giallo (Pensiero)
+                                '#171717'  // Nero (Palla in gioco)
+                            ],
+                            borderColor: '#000',
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    };
+
+                    const config = {
+                        type: 'doughnut',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: { family: 'Roboto Condensed', size: 14 },
+                                        color: '#000'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ` ${context.label}: ${context.raw}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    myChart = new Chart(ctx, config);
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
