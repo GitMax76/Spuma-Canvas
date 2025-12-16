@@ -78,9 +78,9 @@
 </head>
 <body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
 
-    <!-- AUDIO PLAYER HIDDEN (Struttura ripristinata come esempio funzionante) -->
-    <audio id="theme-audio" loop>
-        <source src="holly_theme.mp3" type="audio/mpeg">
+    <!-- AUDIO PLAYER UPDATED WITH HOLLY.mp3 -->
+    <audio id="theme-audio" loop preload="auto">
+        <source src="HOLLY.mp3" type="audio/mpeg">
         Il tuo browser non supporta l'elemento audio.
     </audio>
 
@@ -349,7 +349,7 @@
             let myChart;
             
             // --- AUDIO LOGIC (Robust Fix for AbortError) ---
-            audio.volume = 0.5; // Volume leggermente più alto
+            audio.volume = 0.3; // Volume moderato
 
             function updateMusicIcon(playing) {
                 if (playing) {
