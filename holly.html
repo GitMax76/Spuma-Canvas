@@ -79,9 +79,8 @@
 <body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
 
     <!-- AUDIO PLAYER -->
-    <audio id="theme-audio" loop>
+    <audio id="theme-audio" loop preload="auto">
         <source src="holly_theme.mp3" type="audio/mpeg">
-        <!-- Fallback silenzioso se il file non esiste, per evitare errori console -->
     </audio>
 
     <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
@@ -91,8 +90,8 @@
             <!-- Speed lines background overlay -->
             <div class="absolute inset-0 bg-speed-lines opacity-30 pointer-events-none"></div>
 
-            <!-- Pulsante Controllo Musica -->
-            <button id="music-toggle" class="absolute top-4 right-4 bg-white text-ball-black rounded-full p-2 border-2 border-ball-black shadow-sm hover:bg-muppett-yellow transition-colors z-10" title="Sigla">
+            <!-- Pulsante Controllo Musica (Z-Index aumentato a 50) -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-white text-ball-black rounded-full p-2 border-2 border-ball-black shadow-sm hover:bg-muppett-yellow transition-colors z-50 cursor-pointer" title="Sigla">
                 <span id="music-icon">🔇</span>
             </button>
 
@@ -348,8 +347,19 @@
             const musicToggle = document.getElementById('music-toggle');
             const musicIcon = document.getElementById('music-icon');
             
-            // Set volume basso per non assordare
+            // Set volume
             audio.volume = 0.2;
+
+            // Error listener for file issues
+            audio.addEventListener('error', (e) => {
+                console.error("Audio Error:", e);
+                // Feedback visuale per l'utente
+                musicToggle.style.backgroundColor = '#ef4444'; // Rosso errore
+                musicToggle.style.color = '#fff';
+                musicToggle.title = "File audio non trovato o errore formato";
+                // Opzionale: alert immediato
+                alert("Errore Audio: Assicurati che il file 'holly_theme.mp3' sia presente nella cartella corretta.");
+            });
 
             function updateMusicIcon(playing) {
                 if (playing) {
@@ -370,7 +380,9 @@
                     playPromise
                         .then(() => updateMusicIcon(true))
                         .catch(error => {
-                            console.log("Autoplay blocked:", error);
+                            console.log("Play failed (expected if no user interaction yet or file missing):", error);
+                            // Non forziamo l'icona a 'false' qui se è un problema di interazione, 
+                            // ma se il file manca, l'evento 'error' sopra gestirà l'UI.
                             updateMusicIcon(false);
                         });
                 }
@@ -383,6 +395,13 @@
 
             musicToggle.addEventListener('click', (e) => {
                 e.stopPropagation();
+                
+                // Se c'è stato un errore nel caricamento, non facciamo nulla o ri-notifichiamo
+                if (audio.error) {
+                    alert("Impossibile riprodurre: file audio mancante o corrotto.");
+                    return;
+                }
+
                 if (audio.paused) safePlay();
                 else safePause();
             });
