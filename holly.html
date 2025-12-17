@@ -1,9 +1,8 @@
-<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Holly & Benji - La Fisica Non Esiste</title>
+    <title>Holly & Benji - l'anime sul calcio pù amato</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -74,6 +73,13 @@
         .music-playing {
             animation: bounce-ball 0.5s infinite;
         }
+
+        /* Stile speciale per le sezioni Speech */
+        .speech-card {
+            background-color: #fffbeb; /* Giallino post-it */
+            font-family: 'Courier New', Courier, monospace;
+            border-left: 6px solid #FACC15;
+        }
     </style>
 </head>
 <body class="font-body text-gray-800 antialiased selection:bg-toho-dark selection:text-muppett-yellow">
@@ -95,6 +101,16 @@
             <button id="music-toggle" class="absolute top-4 right-4 bg-white text-ball-black rounded-full p-2 border-2 border-ball-black shadow-sm hover:bg-muppett-yellow transition-colors z-50 cursor-pointer" title="Clicca per attivare la musica">
                 <span id="music-icon">🔇</span>
             </button>
+
+            <!-- Pulsanti Speech (Guida Interventi) -->
+            <div class="absolute top-20 right-4 flex flex-col gap-2 z-50">
+                <button data-target="speech1" class="nav-button bg-red-600 text-white text-xs font-bold py-1 px-3 rounded shadow-md border border-white hover:scale-110 transition-transform">
+                    🎤 Speech 1
+                </button>
+                <button data-target="speech2" class="nav-button bg-red-600 text-white text-xs font-bold py-1 px-3 rounded shadow-md border border-white hover:scale-110 transition-transform">
+                    🎤 Speech 2
+                </button>
+            </div>
 
             <h1 class="font-heading text-5xl sm:text-7xl text-white drop-shadow-[4px_4px_0_#000] mb-2 uppercase tracking-wider skew-x-[-5deg]">
                 Holly & Benji
@@ -128,10 +144,83 @@
         <!-- AREA CONTENUTO PRINCIPALE -->
         <main id="content-area" class="bg-white rounded-lg border-4 border-ball-black p-6 md:p-10 min-h-[50vh] relative shadow-2xl">
             
+            <!-- SPEECH 1: INTRODUZIONE E CONTESTO (1 MINUTO) -->
+            <section id="speech1" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-red-500 pb-2">
+                    <span class="text-4xl">🎙️</span>
+                    <h2 class="font-heading text-3xl text-ball-black uppercase">Intervento 1: Luglio 1986 (1 min)</h2>
+                </div>
+                
+                <div class="speech-card p-6 rounded-lg shadow-inner">
+                    <h3 class="font-bold text-lg mb-2 text-red-600 uppercase">Traccia:</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed">
+                        <li>
+  <strong>Intro (L'Atmosfera):</strong>
+  <p>Era un’estate strana, quella del 1986. In Italia c’era più caldo che entusiasmo: avevamo appena perso i Mondiali in Messico, e il morale calcistico era sotto i tacchetti. In TV giravano gli Europe, Madonna ballava in loop, e noi cercavamo un nuovo mito a cui credere. E proprio lì, tra un videoclip e uno spot del gelato, arriva dal Giappone un ragazzino con un pallone incollato al piede e un sorriso che dice tutto. Lui non lo sa, ma sta per regalare all’Italia una lezione di sogni, amicizia e pallonate epiche: il suo nome è <strong>Holly</strong>.</p>
+</li>
+
+<li>
+  <strong>L'Attacco (Il Contesto):</strong>
+  <p><em>Luglio 1986.</em> Gli azzurri sono già tornati a casa, e il poster di Rossi e Tardelli in cameretta inizia a sembrare un po’ sbiadito. Ma mentre il calcio reale ci delude, quello dei sogni esplode in TV. Su Italia 1, tra una sigla colorata e un jingle allegro, appare un cartone giapponese diverso da tutti gli altri. Non ci sono robot o mostri, ma solo un ragazzo, un campo infinito e un pallone che rotola verso il cielo. È “Holly e Benji”, e in pochi giorni diventa una mania: tutti vogliono tirare calci impossibili e urlare “tiro della tigre” anche solo per andare a scuola.</p>
+</li>
+
+<li>
+  <strong>La Genesi (L'Autore):</strong>
+  <p>La storia, però, comincia otto anni prima. <strong>Yoichi Takahashi</strong>, giovane mangaka giapponese, guarda i Mondiali del ’78 in Argentina. Non sa nulla di calcio — nel suo Paese vanno solo il baseball e i manga di samurai — ma resta ipnotizzato. Quelle bandiere, quei coriandoli, quella passione collettiva che unisce milioni di persone… qualcosa scatta. Takahashi capisce che il calcio non è solo sport: è spettacolo, emozione, vita in movimento. E decide di portarlo in Giappone, non come cronaca, ma come mito moderno: nasce così il sogno di un manga capace di far battere il cuore come una finale mondiale.</p>
+</li>
+
+<li>
+  <strong>L'Obiettivo:</strong>
+  <p>Fin dall’inizio il suo scopo è chiaro: non vuole disegnare partite, ma creare i <em>“Samurai del Calcio”</em>. Non eroi muscolosi, ma ragazzi normali con sogni enormi. Il campo diventa un’arena dove la determinazione conta più della forza, e ogni partita è una sfida all’impossibile. Con Holly e i suoi amici, Takahashi trasforma lo sport in un racconto epico: di amicizia, di rivalità, di crescita. Perché vincere non è solo segnare un gol — è imparare a rialzarsi, sempre, anche dopo una sconfitta.</p>
+</li>
+
+<li>
+  <strong>La Chiusura (Cliffhanger):</strong>
+  <p>All’inizio sembrava solo un cartone per riempire i pomeriggi estivi di Italia 1, e invece... “Holly e Benji” finisce per cambiare il modo in cui guardiamo allo sport, ai sogni e persino all’infanzia. Il Giappone scopre il calcio, l’Italia riscopre la passione. Ma questa è solo la prima metà della storia, perché nella prossima parte vi racconterò come quel pallone, partito da un disegno su carta, è arrivato fino ai piedi dei veri campioni.</p>
+</li>
+
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 2: FISICA ED EREDITA' (1 MINUTO) -->
+            <section id="speech2" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-red-500 pb-2">
+                    <span class="text-4xl">🎙️</span>
+                    <h2 class="font-heading text-3xl text-ball-black uppercase">Intervento 2: Il Mito (1 min)</h2>
+                </div>
+
+                <div class="speech-card p-6 rounded-lg shadow-inner">
+                    <h3 class="font-bold text-lg mb-2 text-red-600 uppercase">Traccia:</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed">
+                        <li>
+  <strong>L'Assurdo (La Fisica):</strong>
+  <p>Ma diciamolo chiaramente: <em>perché lo amiamo ancora?</em> Forse perché nessun altro cartone ha mai osato sfidare con tanta spavalderia le leggi della fisica. I fisici, negli anni, hanno calcolato che il campo di “Holly e Benji” doveva essere lungo almeno 18 chilometri — più o meno quanto una maratona — solo per giustificare le corse infinite dei protagonisti. E quando Mark Lenders tirava, la palla diventava ovale, attraversava l’atmosfera e quasi sfiorava l’orbita terrestre. Eppure, nonostante tutto, noi ci credevamo. E continuiamo a crederci, perché l’assurdo, quando è raccontato con il cuore, diventa poesia.</p>
+</li>
+
+<li>
+  <strong>L'Eredità Reale:</strong>
+  <p>Il bello è che quell’esagerazione ha finito per creare la realtà. Generazioni di bambini giapponesi e italiani sono cresciute imitando le rovesciate di Holly o le parate di Benji. Alcuni di loro hanno realizzato davvero quei sogni: <strong>Iniesta, Del Piero, Zidane</strong> — tutti hanno confessato di aver iniziato a giocare perché volevano essere come i protagonisti di quel cartone. “Captain Tsubasa” non si è limitato a raccontare il calcio: lo ha costruito. Ha trasformato una fantasia animata in ispirazione concreta, fino a plasmare l’identità sportiva di un’intera generazione.</p>
+</li>
+
+<li>
+  <strong>La Geografia Sentimentale (Artribune):</strong>
+  <p>Come ha scritto <strong>Artribune</strong> nel 2025, “Holly e Benji” ha creato una vera e propria <em>geografia sentimentale</em> del calcio. I suoi personaggi non erano semplici disegni, ma mappe emotive, incarnazioni di giocatori reali e delle loro leggende. <strong>Maradona</strong> viveva nei dribbling impossibili di Juan Diaz, <strong>Rummenigge</strong> brillava nella potenza di Karl-Heinz Schneider. Erano archetipi, specchi di un’epoca in cui il pallone era più di un gioco: era identità, sogno, racconto collettivo. E noi, da spettatori, ci sentivamo parte di quella mitologia, ogni volta che tiravamo un calcio nel cortile.</p>
+</li>
+
+<li>
+  <strong>Chiusura:</strong>
+  <p>Oggi viviamo in un calcio ultra-tattico, pieno di analisi, di replay e di VAR. Tutto è preciso, controllato, quasi scientifico. Ma poi basta un frame di Holly che prepara il tiro, lo sguardo all’orizzonte e il vento tra i capelli, per ricordarci perché ci siamo innamorati di questo gioco. <em>In un mondo di calcio ultra-tattico e VAR, Holly ci ricorda che il calcio è prima di tutto sogno, e che la palla è sempre, incredibilmente, tua amica.</em></p>
+</li>
+
+                    </ul>
+                </div>
+            </section>
+
             <!-- SEZIONE 0: IL CONTESTO 1986 (ARRIVO IN ITALIA) -->
             <section id="context1986" class="content-section space-y-6">
                 <div class="flex items-center gap-3 mb-4 border-b-4 border-field-green pb-2">
-                    <span class="text-4xl">🇮🇹</span>
+                    <span class="text-4xl"></span>
                     <h2 class="font-heading text-4xl text-ball-black uppercase">Luglio 1986: L'Invasione</h2>
                 </div>
                 <p class="text-xl leading-relaxed font-bold">
@@ -331,7 +420,7 @@
         </main>
 
         <footer class="text-center mt-8 p-4 bg-ball-black text-white rounded-lg skew-x-[-5deg]">
-            <p class="font-heading uppercase tracking-widest text-lg text-muppett-yellow mb-1">Palla al centro per Holly!</p>
+            <p class="font-heading uppercase tracking-widest text-lg text-muppett-yellow mb-1">son portiere e attaccante, Holly e Benji due speranze</p>
             <p class="text-xs opacity-70 font-mono">© 1986-2025 Fan Made Analysis. Nessun legamento crociato è stato rotto durante la codifica.</p>
         </footer>
     </div>
@@ -425,9 +514,21 @@
                         const targetSection = document.getElementById(targetId);
                         if (targetSection) targetSection.classList.remove('hidden');
                         
-                        // Gestione Stili Bottoni
-                        buttons.forEach(btn => btn.classList.remove('active'));
-                        button.classList.add('active');
+                        // Gestione Stili Bottoni (reset e active)
+                        buttons.forEach(btn => {
+                            // Rimuovi classi active generiche
+                            btn.classList.remove('active'); 
+                            
+                            // Se non sono i bottoni speech (che hanno stili propri fissi), resetta stili
+                            if (!btn.dataset.target.startsWith('speech')) {
+                                // Qui potresti gestire stili specifici se necessario
+                            }
+                        });
+
+                        // Aggiungi stile active solo ai bottoni principali di navigazione
+                        if (!button.dataset.target.startsWith('speech')) {
+                            button.classList.add('active');
+                        }
                         
                         // Inizializza Grafico se necessario (Solo nel tab Eredità)
                         if (targetId === 'eredita' && !myChart) {
@@ -436,8 +537,9 @@
                     });
                 });
                 
-                // Attiva primo tab
-                if (buttons.length > 0) buttons[0].click();
+                // Attiva primo tab di default (se non è uno speech)
+                const firstNavButton = document.querySelector('.nav-button:not([data-target^="speech"])');
+                if (firstNavButton) firstNavButton.click();
             }
 
             function initChart() {
