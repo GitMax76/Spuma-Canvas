@@ -7,7 +7,8 @@
 <!-- Import font Bangers per il bottone Holly e Benji -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
+<!-- Aggiunti font per MTV (Anton, Roboto) e Take That (Playfair Display) -->
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Anton&family=Roboto:wght@900&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
 
 <style>
   body {
@@ -128,7 +129,9 @@
   .btn-blockbuster,
   .btn-mamma,
   .btn-holly,
-  .btn-beverly {
+  .btn-beverly,
+  .btn-mtv,
+  .btn-takethat {
     pointer-events: auto;
     cursor: pointer;
     opacity: 1;
@@ -185,34 +188,31 @@
 
   /* HOLLY E BENJI */
   .btn-holly {
-    /* Gradiente New Team Blue -> Toho Dark */
     background: linear-gradient(90deg, #3B82F6 0%, #1E3A8A 100%);
     color: #fff;
     font-family: 'Bangers', cursive, sans-serif;
     font-size: 2.4rem;
     letter-spacing: 2px;
     padding: 16px 0;
-    border: 3px solid #171717; /* Ball Black */
-    /* Manga Shadow Style */
+    border: 3px solid #171717;
     box-shadow: 6px 6px 0px #171717;
     text-shadow: 3px 3px 0 #000;
-    transform: skew(-5deg); /* Effetto velocità/dinamico */
-    border-radius: 4px; /* Angoli leggermente meno arrotondati */
+    transform: skew(-5deg);
+    border-radius: 4px;
     transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   }
 
   .btn-holly:hover {
     transform: skew(-5deg) scale(1.05) translateY(-5px);
     box-shadow: 10px 10px 0px #171717;
-    color: #FACC15; /* Muppett Yellow al passaggio del mouse */
+    color: #FACC15;
     border-color: #fff;
   }
 
-  /* BEVERLY HILLS 90210 - BADGE STYLE REWORK */
+  /* BEVERLY HILLS 90210 */
   .btn-beverly {
     background: #fff;
-    border: 6px solid #FF1493; /* Magenta ring */
-    /* Forma "badge" arrotondato */
+    border: 6px solid #FF1493;
     border-radius: 60px; 
     font-family: 'Impact', 'Arial Narrow', sans-serif;
     padding: 10px 0;
@@ -225,68 +225,104 @@
     position: relative;
     overflow: hidden;
   }
-  
   .btn-beverly:hover {
     transform: scale(1.04) translateY(-3px);
     box-shadow: 0 10px 25px rgba(255, 20, 147, 0.5);
     z-index: 10;
   }
-
-  /* Testo "BEVERLY HILLS" */
   .bh-top {
-    color: #00BFFF; /* Deep Sky Blue */
+    color: #00BFFF;
     font-size: 1.4rem;
     font-weight: 900;
     letter-spacing: 1px;
     line-height: 0.9;
     margin-bottom: 2px;
     text-align: center;
-    /* Simulazione arco su due righe se necessario, qui stacked */
     display: flex;
     flex-direction: column;
   }
   .bh-line { display: block; }
-
-  /* Numeri 90210 */
   .bh-digits {
     display: flex;
     align-items: center;
     justify-content: center;
     margin-top: 2px;
   }
-
   .bh-digits span {
     font-size: 2.8rem;
     font-weight: 900;
     line-height: 1;
     display: inline-block;
-    /* Effetto 3D min con text-shadow */
-    text-shadow: 2px 2px 0px rgba(255, 255, 0, 0.3); /* Ombra gialla interna soft */
+    text-shadow: 2px 2px 0px rgba(255, 255, 0, 0.3);
     position: relative;
-    margin: 0 -3px; /* Sovrapposizione */
+    margin: 0 -3px;
     transition: transform 0.2s;
   }
-
-  /* Colori e inclinazioni cifre */
   .d-9 { color: #FFFF00; transform: rotate(-6deg) translateY(2px); z-index: 1; -webkit-text-stroke: 1px #e6e600;}
   .d-0a { color: #FFA500; transform: rotate(-3deg); z-index: 2; -webkit-text-stroke: 1px #e69500;}
   .d-2 { color: #FF00FF; transform: scale(1.1) rotate(0deg) translateY(-2px); z-index: 3; -webkit-text-stroke: 1px #cc00cc;}
   .d-1 { color: #00FF00; transform: rotate(3deg); z-index: 2; -webkit-text-stroke: 1px #00cc00;}
   .d-0b { color: #00FFFF; transform: rotate(6deg) translateY(2px); z-index: 1; -webkit-text-stroke: 1px #00cccc;}
-
-  /* Simbolo TM/R */
   .bh-reg {
     position: absolute;
-    bottom: 8px;
-    right: 20px;
-    font-size: 0.6rem;
-    color: #fff;
-    background: #000; /* Per visibilità su sfondo bianco */
-    border-radius: 50%;
-    width: 12px; height: 12px;
-    line-height: 12px;
-    text-align: center;
-    opacity: 0.6;
+    bottom: 8px; right: 20px;
+    font-size: 0.6rem; color: #fff;
+    background: #000; border-radius: 50%;
+    width: 12px; height: 12px; line-height: 12px;
+    text-align: center; opacity: 0.6;
+  }
+
+  /* --- MTV BUTTON STYLE (Image Based) --- */
+  .btn-mtv {
+    background: #B2FF59; /* USA background per sovrascrivere il gradiente di default */
+    padding: 10px 0;
+    border: 4px solid #000;
+    /* Ombre nette pop art */
+    box-shadow: 
+        5px 5px 0px #00FFFF, 
+        10px 10px 0px #FF00FF,
+        10px 10px 0px 3px #000; 
+    transform: rotate(-2deg);
+    transition: all 0.2s ease;
+    border-radius: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  .btn-mtv:hover {
+    transform: scale(1.05) rotate(0deg);
+    background: #000;
+    border-color: #B2FF59;
+    box-shadow: 
+        5px 5px 0px #FF00FF, 
+        10px 10px 0px #00FFFF;
+  }
+  /* Invert filter on hover to allow black logo to show on black bg if transparent, 
+     but assuming PNG is black, we might want to keep bg yellow or white on hover for contrast 
+     if we don't invert. Let's keep background swap logic simple. */
+  .btn-mtv:hover img {
+     filter: invert(1); /* Inverte il logo nero in bianco quando lo sfondo diventa nero */
+  }
+
+  /* --- TAKE THAT BUTTON STYLE (Image Based) --- */
+  .btn-takethat {
+    background: #FFFFFF; /* Sfondo bianco per far risaltare il logo nero */
+    padding: 15px 0;
+    border: 3px double #C5A059; /* Bordo doppio oro */
+    border-radius: 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .btn-takethat:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(197, 160, 89, 0.6);
+    border-color: #000;
   }
 
   /* COMING SOON */
@@ -301,7 +337,7 @@
     text-shadow: none;
     box-shadow: 0 2px 10px #b7003622;
     text-transform: uppercase;
-    display: block; /* Reset del display block standard */
+    display: block; 
   }
   @keyframes soonPulse {
     0% { box-shadow: 0 0 0 #ffd80022; filter: brightness(1);}
@@ -335,24 +371,22 @@
     HOLLY E BENJI
   </button>
   
-  <!-- NUOVO BOTTONE BEVERLY HILLS 90210 - BADGE STYLE -->
+  <!-- BOTTONE BEVERLY HILLS 90210 -->
   <button class="btn-beverly" onclick="window.location.href='beverly.html'">
-    <div class="bh-top">
-      <span class="bh-line">BEVERLY</span>
-      <span class="bh-line">HILLS</span>
-    </div>
-    <div class="bh-digits">
-      <span class="d-9">9</span>
-      <span class="d-0a">0</span>
-      <span class="d-2">2</span>
-      <span class="d-1">1</span>
-      <span class="d-0b">0</span>
-    </div>
-    <span class="bh-reg">R</span>
+    <img src="https://images.seeklogo.com/logo-png/44/1/beverly-hills-90210-logo-png_seeklogo-445775.png" alt="Beverly Hills 90210 Logo" style="height: 85px; width: auto; display: block;">
+  </button>
+
+  <!-- NUOVO BOTTONE MTV (Logo Immagine) -->
+  <button class="btn-mtv" onclick="window.location.href='mtv_revolution.html'">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0b/MTV_New_Official_Logo_2021.png" alt="MTV Logo" style="height: 60px; width: auto; display: block;">
+  </button>
+
+  <!-- NUOVO BOTTONE TAKE THAT (Logo Immagine) -->
+  <button class="btn-takethat" onclick="window.location.href='take_that.html'">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_Take_That.png" alt="Take That Logo" style="height: 40px; width: auto; display: block;">
   </button>
   
   <!-- Episodi futuri solo "COMING SOON" -->
-  <button disabled>COMING SOON</button>
   <button disabled>COMING SOON</button>
 </main>
 </body>
