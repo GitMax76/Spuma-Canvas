@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MTV - I Want My MTV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font: Anton (simile ai titoli bold MTV) e Roboto Mono (per l'effetto tecnico/broadcast) -->
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Palette: MTV 80s/90s (Giallo Acido, Rosa Shocking, Blu Elettrico, Nero) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'mtv-yellow': '#FFF200',   // Giallo acido
+                        'mtv-pink': '#FF0099',     // Rosa shocking
+                        'mtv-blue': '#00AEEF',     // Blu elettrico
+                        'mtv-black': '#111111',    // Nero profondo
+                        'mtv-purple': '#662D91',   // Viola scuro
+                        'static-gray': '#E5E5E5',  // Grigio statico
+                    },
+                    fontFamily: {
+                        heading: ['Anton', 'sans-serif'], 
+                        body: ['Roboto Mono', 'monospace'],
+                    },
+                    boxShadow: {
+                        'pop': '8px 8px 0px #111111',
+                        'neon-pink': '4px 4px 0px #FF0099',
+                        'neon-blue': '4px 4px 0px #00AEEF',
+                    },
+                    backgroundImage: {
+                        'tv-static': "repeating-linear-gradient(45deg, #eee 0, #eee 1px, #fff 0, #fff 50%)"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        
+        body {
+            background-color: #FFF200;
+            /* Pattern stile Memphis/Pop Art */
+            background-image: 
+                radial-gradient(#111 15%, transparent 16%),
+                radial-gradient(#111 15%, transparent 16%);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        .nav-button.active {
+            transform: scale(1.05) rotate(-2deg);
+            background-color: #111111;
+            color: #FFF200;
+            border-color: #111111;
+            box-shadow: 6px 6px 0px #FF0099;
+        }
+
+        /* Stile speciale per le sezioni Speech */
+        .speech-card {
+            background-color: #fff;
+            border: 4px solid #111;
+            box-shadow: 8px 8px 0px #00AEEF;
+            font-family: 'Roboto Mono', monospace;
+        }
+
+        /* Effetto Glitch sul titolo */
+        .glitch-text:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            color: #FF0099;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
+        /* Animazione pulsante musica */
+        @keyframes pulse-neon {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 153, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 0, 153, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 153, 0); }
+        }
+        .music-playing {
+            animation: pulse-neon 1.5s infinite;
+            background-color: #FF0099 !important;
+            color: #fff !important;
+            border-color: #fff !important;
+        }
+    </style>
+</head>
+<body class="font-body text-mtv-black antialiased selection:bg-mtv-pink selection:text-white">
+
+    <!-- AUDIO PLAYER -->
+    <audio id="theme-audio" loop preload="auto" autoplay>
+        <source src="mtv_theme.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+    </audio>
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <!-- HEADER STYLE MTV POP ART -->
+        <header class="text-center mb-10 bg-white p-8 border-4 border-mtv-black shadow-pop relative overflow-hidden group flex flex-col items-center justify-center transform -rotate-1">
+            
+            <!-- Pulsante Controllo Musica (Z-Index 50) -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-mtv-black text-white rounded-none p-3 border-2 border-white hover:bg-mtv-blue transition-colors z-50 cursor-pointer shadow-sm" title="Music ON/OFF">
+                <span id="music-icon" class="text-xl">🔇</span>
+            </button>
+
+            <!-- Pulsanti Speech (Guida Interventi) -->
+            <div class="absolute top-20 right-4 flex flex-col gap-2 z-50">
+                <button data-target="speech1" class="nav-button bg-mtv-pink text-white text-xs font-bold py-2 px-4 border-2 border-mtv-black shadow-[4px_4px_0px_#000] hover:translate-x-1 transition-transform uppercase">
+                    🎤 Speech 1
+                </button>
+                <button data-target="speech2" class="nav-button bg-mtv-blue text-white text-xs font-bold py-2 px-4 border-2 border-mtv-black shadow-[4px_4px_0px_#000] hover:translate-x-1 transition-transform uppercase">
+                    🎤 Speech 2
+                </button>
+                <button data-target="speech3" class="nav-button bg-mtv-yellow text-mtv-black text-xs font-bold py-2 px-4 border-2 border-mtv-black shadow-[4px_4px_0px_#000] hover:translate-x-1 transition-transform uppercase">
+                    ⚡ Flash Facts
+                </button>
+            </div>
+
+            <!-- LOGO IMAGE BLOCK -->
+            <div class="mb-4 transform hover:scale-110 transition-transform duration-300 cursor-pointer w-full max-w-xs mx-auto">
+                <img src="mtv-logo.png" alt="MTV Logo" class="w-full h-auto drop-shadow-md object-contain">
+            </div>
+            
+            <h1 class="font-heading text-4xl sm:text-6xl text-mtv-black uppercase tracking-tighter glitch-text leading-none mt-2">
+                Music Television
+            </h1>
+            <p class="font-bold bg-mtv-black text-white inline-block px-2 py-1 mt-2 text-sm uppercase tracking-widest">Est. August 1, 1981</p>
+        </header>
+
+        <!-- NAVIGAZIONE -->
+        <nav id="navigation" class="flex flex-wrap justify-center gap-4 mb-8">
+            <button data-target="launch1981" class="nav-button font-heading text-xl bg-white text-mtv-black border-4 border-mtv-black py-2 px-6 shadow-neon-pink transition-all duration-200 uppercase">
+                🚀 1981
+            </button>
+            <button data-target="genesis" class="nav-button font-heading text-xl bg-mtv-black text-mtv-yellow border-4 border-mtv-yellow py-2 px-6 shadow-neon-blue transition-all duration-200 uppercase">
+                💡 Genesi
+            </button>
+            <button data-target="vjs" class="nav-button font-heading text-xl bg-mtv-blue text-white border-4 border-mtv-black py-2 px-6 shadow-pop transition-all duration-200 uppercase">
+                🎧 I VJ
+            </button>
+            <button data-target="legacy" class="nav-button font-heading text-xl bg-mtv-pink text-white border-4 border-mtv-black py-2 px-6 shadow-pop transition-all duration-200 uppercase">
+                🌍 Legacy
+            </button>
+             <button data-target="stats" class="nav-button font-heading text-xl bg-mtv-yellow text-mtv-black border-4 border-mtv-black py-2 px-6 shadow-pop transition-all duration-200 uppercase">
+                📊 Dati
+            </button>
+        </nav>
+
+        <!-- AREA CONTENUTO PRINCIPALE -->
+        <main id="content-area" class="bg-white border-4 border-mtv-black p-6 md:p-10 min-h-[50vh] relative shadow-pop">
+            
+            <!-- SPEECH 1: IL LANCIO (1 MINUTO) -->
+            <section id="speech1" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-pink pb-2">
+                    <span class="text-4xl">🚀</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">Intervento 1: Il Big Bang (1 min)</h2>
+                </div>
+                
+                <div class="speech-card p-6">
+                    <h3 class="font-bold text-lg mb-2 text-mtv-pink uppercase tracking-widest bg-black inline-block px-2">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4">
+                        <li>
+                            <strong>L'Ora X:</strong> "1 Agosto 1981, ore 00:01. Mentre il mondo dormiva, la televisione cambiava per sempre." Descrivete l'immagine sgranata dell'astronauta sulla luna che pianta una bandiera con la M a zig-zag.
+                        </li>
+                        <li>
+                            <strong>La Frase:</strong> Citate John Lack: <em>"Ladies and gentlemen, Rock and Roll."</em>
+                        </li>
+                        <li>
+                            <strong>Il Primo Video:</strong> L'ironia suprema. Il primo video trasmesso fu <em>"Video Killed the Radio Star"</em> dei Buggles. Era una dichiarazione di guerra alla radio. E avevano ragione.
+                        </li>
+                        <li>
+                            <strong>L'Impatto Immediato:</strong> "Improvvisamente la musica non si ascoltava più, si guardava." I cantanti brutti ma bravi sparirono. Bisognava essere icone. Nacque l'era dell'immagine.
+                        </li>
+                        <li>
+                            <strong>Chiusura:</strong> "I Want My MTV non era solo uno slogan, era l'urlo di una generazione intera."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 2: L'EVOLUZIONE (1 MINUTO) -->
+            <section id="speech2" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-blue pb-2">
+                    <span class="text-4xl">📺</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">Intervento 2: Oltre la Musica (1 min)</h2>
+                </div>
+
+                <div class="speech-card p-6" style="border-color: #00AEEF; box-shadow: 8px 8px 0px #FF0099;">
+                    <h3 class="font-bold text-lg mb-2 text-mtv-blue uppercase tracking-widest bg-black inline-block px-2">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4">
+                        <li>
+                            <strong>L'Invenzione del Reality:</strong> Spiegate che MTV non ha solo cambiato la musica. Nel 1992 lanciano <em>The Real World</em>. Sette sconosciuti in una casa. Hanno letteralmente INVENTATO il Grande Fratello e i reality moderni.
+                        </li>
+                        <li>
+                            <strong>Il Fenomeno TRL:</strong> Saltate alla fine degli anni '90. Times Square bloccata dal traffico. Carson Daly alla finestra. Britney, Backstreet Boys, Eminem. Era il centro del mondo pop.
+                        </li>
+                        <li>
+                            <strong>La Critica:</strong> "Perché MTV non trasmette più musica?". La risposta è semplice: MTV è sempre stata uno specchio dei giovani. Quando i giovani sono andati su Napster e YouTube per la musica, MTV è diventata lifestyle (Jersey Shore, Catfish).
+                        </li>
+                        <li>
+                            <strong>Chiusura:</strong> "MTV è stata l'internet prima di internet. Una finestra colorata sul mondo che ci ha uniti tutti sotto lo stesso ritmo."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 3: FLASH FACTS (30 SECONDI) -->
+            <section id="speech3" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-yellow pb-2">
+                    <span class="text-4xl">⚡</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">Flash Facts (30 sec)</h2>
+                </div>
+
+                <div class="speech-card p-6 bg-yellow-50" style="border-color: #FF0099; box-shadow: 8px 8px 0px #111;">
+                    <h3 class="font-bold text-lg mb-2 text-mtv-black uppercase tracking-widest bg-mtv-yellow inline-block px-2">Pillole Veloci</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4">
+                        <li>
+                            <strong>La Barriera del Colore:</strong> Nei primissimi anni, MTV era accusata di non trasmettere artisti neri. Fu <strong>Michael Jackson</strong> con "Billie Jean" a sfondare la porta nel 1983, obbligandoli a trasmetterlo per la qualità assurda del video.
+                        </li>
+                        <li>
+                            <strong>Nirvana Unplugged:</strong> Il concerto acustico dei Nirvana (1993) è considerato una delle più grandi performance dal vivo della storia della TV. Il maglione di Kurt Cobain è iconico.
+                        </li>
+                        <li>
+                            <strong>Beavis & Butt-Head:</strong> Un cartone su due idioti che guardano la TV. Ha definito l'umorismo di una generazione (e lanciato lo spin-off Daria).
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEZIONE 0: IL LANCIO 1981 -->
+            <section id="launch1981" class="content-section space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-black pb-2">
+                    <span class="text-4xl">👨‍🚀</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">1 Agosto 1981</h2>
+                </div>
+                <p class="text-xl leading-relaxed font-bold bg-mtv-yellow inline-block px-2 mb-2">
+                    "Ladies and Gentlemen, Rock and Roll."
+                </p>
+                <p class="text-lg leading-relaxed">
+                    A mezzanotte e un minuto, sugli schermi via cavo americani apparve un montaggio del lancio dell'Apollo 11. Al posto della bandiera americana, c'era il logo di MTV.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <!-- Primo Video -->
+                    <div class="bg-mtv-black text-white p-5 border-4 border-mtv-pink">
+                        <h3 class="font-heading text-2xl text-mtv-pink mb-2">Video #001</h3>
+                        <div class="text-4xl mb-2">📻 🔪 ⭐</div>
+                        <p class="font-bold text-xl">"Video Killed the Radio Star"</p>
+                        <p class="text-sm mt-1">The Buggles</p>
+                        <p class="mt-4 text-sm text-gray-400">Una profezia autoavverante. La canzone era mediocre, ma il messaggio era potente: la radio era il passato, il video il futuro.</p>
+                    </div>
+
+                    <!-- Secondo Video -->
+                    <div class="bg-white text-mtv-black p-5 border-4 border-mtv-blue">
+                        <h3 class="font-heading text-2xl text-mtv-blue mb-2">Video #002</h3>
+                        <p class="font-bold text-xl">"You Better Run"</p>
+                        <p class="text-sm mt-1">Pat Benatar</p>
+                        <p class="mt-4 text-sm">Molto meno famoso del primo, ma segnò l'inizio del rock femminile su MTV.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 1: GENESI -->
+            <section id="genesis" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-yellow pb-2">
+                    <span class="text-4xl">💡</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">Visual Radio</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-lg leading-relaxed mb-4">
+                            <strong>L'Idea.</strong> Robert Pittman aveva un'idea semplice ma folle: un canale che non trasmette programmi, ma "flusso". Come una radio, ma con le immagini.
+                        </p>
+                        <p class="text-lg leading-relaxed">
+                            <strong>I Want My MTV.</strong> All'inizio i canali via cavo non volevano trasmettere MTV. Allora lanciarono una campagna pubblicitaria dove Mick Jagger e David Bowie urlavano <em>"I WANT MY MTV"</em>. I teenager intasarono i centralini delle compagnie via cavo. Funzionò.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 border-4 border-mtv-black shadow-[8px_8px_0px_#FFF200]">
+                        <h3 class="font-heading text-2xl mb-3 text-mtv-black">L'Estetica "Trash"</h3>
+                        <p class="mb-2 text-sm italic">Il logo cambiava colore ogni 10 secondi. Perché?</p>
+                        <p class="text-sm font-mono">
+                            I designer volevano rompere la regola del "corporate branding" rigido (come CBS o NBC). Il logo di MTV era vivo, dinamico, anarchico. Poteva essere riempito di graffiti, mattoni, o pelle di leopardo.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 2: I VJ -->
+            <section id="vjs" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-blue pb-2">
+                    <span class="text-4xl">🎧</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">Video Jockeys</h2>
+                </div>
+                
+                <p class="mb-4 text-lg">Non conduttori, non DJ. I <strong>VJ</strong> erano gli amici cool che vivevano nella tua TV.</p>
+
+                <div class="grid md:grid-cols-3 gap-4 text-center">
+                    <div class="border-4 border-mtv-black p-4 bg-mtv-yellow hover:translate-y-1 transition-transform">
+                        <h3 class="font-heading text-xl">The Originals (1981)</h3>
+                        <p class="text-sm font-mono mt-2">Mark Goodman, Nina Blackwood, Alan Hunter, J.J. Jackson, Martha Quinn.</p>
+                    </div>
+                    <div class="border-4 border-mtv-black p-4 bg-mtv-pink text-white hover:translate-y-1 transition-transform">
+                        <h3 class="font-heading text-xl">The Alt Era (90s)</h3>
+                        <p class="text-sm font-mono mt-2">Kennedy, Bill Bellamy, Pauly Shore. Più cinici, più alternativi.</p>
+                    </div>
+                    <div class="border-4 border-mtv-black p-4 bg-mtv-blue text-white hover:translate-y-1 transition-transform">
+                        <h3 class="font-heading text-xl">TRL Era (2000s)</h3>
+                        <p class="text-sm font-mono mt-2">Carson Daly. L'uomo che controllava Times Square ogni pomeriggio.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: LEGACY -->
+            <section id="legacy" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-pink pb-2">
+                    <span class="text-4xl">🌍</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">L'Eredità</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="bg-mtv-black p-6 border-4 border-mtv-yellow text-white">
+                        <h3 class="font-heading text-2xl text-mtv-yellow mb-2">Prima di YouTube</h3>
+                        <p class="mb-4">MTV ha creato il linguaggio visivo del web moderno:</p>
+                        <ul class="space-y-2 font-mono text-sm">
+                            <li>✂️ <strong>Montaggio Frenetico:</strong> Clip da 3 minuti hanno ridotto la nostra soglia di attenzione.</li>
+                            <li>📹 <strong>Reality TV:</strong> "The Real World" (1992) ha inventato il genere prima del Grande Fratello.</li>
+                            <li>🗳️ <strong>Rock the Vote:</strong> Ha insegnato ai giovani che la politica poteva essere pop.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="bg-white p-6 border-4 border-mtv-black">
+                        <h3 class="font-heading text-2xl text-mtv-purple mb-2">Show Iconici</h3>
+                        <ul class="list-disc list-inside space-y-2 font-bold">
+                            <li>Beavis and Butt-Head</li>
+                            <li>Daria</li>
+                            <li>MTV Unplugged</li>
+                            <li>Jackass</li>
+                            <li>Pimp My Ride</li>
+                            <li>Cribs (Benvenuti a casa mia!)</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: ANALISI CHART -->
+            <section id="stats" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mtv-yellow pb-2">
+                    <span class="text-4xl">📊</span>
+                    <h2 class="font-heading text-4xl text-mtv-black uppercase">Il Palinsesto (Golden Age)</h2>
+                </div>
+
+                <div class="chart-container mb-8">
+                    <canvas id="mtvChart"></canvas>
+                </div>
+
+                <!-- STATS BOTTOM -->
+                <div class="grid grid-cols-2 gap-4 mt-8 text-center font-heading">
+                    <div class="p-2 bg-mtv-black text-white border-2 border-mtv-pink">
+                        <div class="text-3xl text-mtv-pink">24/7</div>
+                        <div class="text-xs font-mono">Trasmissione</div>
+                    </div>
+                    <div class="p-2 bg-mtv-black text-white border-2 border-mtv-blue">
+                        <div class="text-3xl text-mtv-blue">120</div>
+                        <div class="text-xs font-mono">Minuti (Alternative)</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-8 p-4 bg-mtv-black text-white border-t-8 border-mtv-pink">
+            <p class="font-heading uppercase tracking-widest text-lg text-mtv-yellow mb-1">MTV: Music Television</p>
+            <p class="text-xs opacity-70 font-mono">Fan Site 2025. "I Want My MTV".</p>
+        </footer>
+    </div>
+
+    <!-- START OVERLAY -->
+    <div id="start-overlay" class="fixed inset-0 bg-mtv-black z-[100] flex flex-col items-center justify-center hidden">
+        <div class="text-center p-8 border-4 border-mtv-yellow bg-white shadow-[10px_10px_0px_#FF0099] max-w-md w-[85%] transform rotate-2">
+            <img src="mtv-logo.png" alt="MTV Logo" class="w-1/2 h-auto mx-auto mb-6 object-contain">
+            <h2 class="font-heading text-3xl mb-4">Sei pronto al Rock?</h2>
+            <button id="btn-enter" class="bg-mtv-black text-white font-heading text-xl py-3 px-8 border-4 border-mtv-blue hover:bg-mtv-pink transition-colors uppercase">
+                ENTER THE MUSIC
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const chartCanvas = document.getElementById('mtvChart');
+            const audio = document.getElementById('theme-audio');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+            const startOverlay = document.getElementById('start-overlay');
+            const enterBtn = document.getElementById('btn-enter');
+
+            let myChart;
+            
+            // --- AUDIO LOGIC ---
+            audio.volume = 0.5; 
+
+            function updateMusicIcon(playing) {
+                if (playing) {
+                    musicIcon.textContent = '🤘'; // Rock Hand
+                    musicToggle.classList.add('music-playing');
+                } else {
+                    musicIcon.textContent = '🔇';
+                    musicToggle.classList.remove('music-playing');
+                }
+            }
+
+            const tryPlayMusic = async () => {
+                try {
+                    await audio.play();
+                    updateMusicIcon(true);
+                    startOverlay.classList.add('hidden');
+                } catch (err) {
+                    console.log("Autoplay blocked:", err);
+                    updateMusicIcon(false);
+                    startOverlay.classList.remove('hidden');
+                }
+            };
+
+            // 1. Try immediately
+            tryPlayMusic();
+
+            // 2. Overlay Button
+            enterBtn.addEventListener('click', () => {
+                tryPlayMusic();
+                startOverlay.classList.add('hidden');
+            });
+
+            const safePause = () => {
+                audio.pause();
+                updateMusicIcon(false);
+            };
+
+            musicToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (audio.paused) {
+                    tryPlayMusic();
+                } else {
+                    safePause();
+                }
+            });
+
+            // --- NAVIGATION LOGIC ---
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+                        sections.forEach(section => section.classList.add('hidden'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) targetSection.classList.remove('hidden');
+                        
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        if (!button.dataset.target.startsWith('speech')) {
+                            button.classList.add('active');
+                        }
+                        
+                        if (targetId === 'stats' && !myChart) {
+                            initChart();
+                        }
+                    });
+                });
+                
+                const firstNavButton = document.querySelector('.nav-button:not([data-target^="speech"])');
+                if (firstNavButton) firstNavButton.click();
+            }
+
+            function initChart() {
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    
+                    const data = {
+                        labels: ['Music Videos', 'VJ Segments', 'Commercials', 'Animations/ID'],
+                        datasets: [{
+                            label: 'MTV Hour (1985)',
+                            data: [65, 10, 15, 10],
+                            backgroundColor: [
+                                '#FF0099', // Pink
+                                '#00AEEF', // Blue
+                                '#FFF200', // Yellow
+                                '#111111'  // Black
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 4,
+                            hoverOffset: 10
+                        }]
+                    };
+
+                    const config = {
+                        type: 'doughnut',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: { family: 'Roboto Mono', size: 14 },
+                                        color: '#111'
+                                    }
+                                },
+                                tooltip: {
+                                    titleFont: { family: 'Anton' },
+                                    bodyFont: { family: 'Roboto Mono' },
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ` ${context.label}: ${context.raw}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    myChart = new Chart(ctx, config);
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
