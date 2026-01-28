@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Take That - Back for Good</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font: Montserrat (Moderno/Clean) e Playfair Display (Eleganza) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Palette: Ispirata alle copertine (Beautiful World, Progress, Everything Changes) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'tt-gold': '#C5A059',      // Oro elegante (Beautiful World)
+                        'tt-blue': '#1E293B',      // Blu scuro notte
+                        'tt-cyan': '#00C2CB',      // Ciano pop (Anni 90)
+                        'tt-black': '#0F0F0F',     // Nero profondo
+                        'tt-white': '#F8F9FA',     // Bianco carta
+                        'tt-red': '#E11D48',       // Rosso (Logo Progress)
+                    },
+                    fontFamily: {
+                        heading: ['Montserrat', 'sans-serif'], 
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'elegant': '0 10px 30px -10px rgba(0, 0, 0, 0.3)',
+                        'glow': '0 0 15px rgba(197, 160, 89, 0.3)',
+                    },
+                    backgroundImage: {
+                        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        
+        body {
+            background-color: #0F0F0F;
+            background-image: 
+                linear-gradient(to bottom, rgba(15, 15, 15, 0.8), rgba(15, 15, 15, 1)),
+                url('https://www.transparenttextures.com/patterns/cubes.png');
+            color: #F8F9FA;
+        }
+
+        .nav-button.active {
+            transform: translateY(-2px);
+            background-color: #C5A059;
+            color: #0F0F0F;
+            border-color: #C5A059;
+            font-weight: 900;
+        }
+
+        /* Stile Card Documentario */
+        .netflix-card {
+            background: linear-gradient(135deg, #000 0%, #1a1a1a 100%);
+            border-left: 4px solid #E50914; /* Netflix Red */
+        }
+
+        /* Animazione pulsante musica */
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(197, 160, 89, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(197, 160, 89, 0); }
+        }
+        .music-playing {
+            animation: pulse-gold 2s infinite;
+            background-color: #C5A059 !important;
+            color: #000 !important;
+        }
+    </style>
+</head>
+<body class="font-heading antialiased">
+
+    <!-- AUDIO PLAYER -->
+    <audio id="theme-audio" loop preload="auto" autoplay>
+        <source src="Take That - Medley.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+    </audio>
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <!-- HEADER ELEGANT POP -->
+        <header class="text-center mb-10 bg-tt-white text-tt-black p-8 rounded-sm shadow-elegant relative overflow-hidden group flex flex-col items-center justify-center">
+            
+            <!-- Pulsante Controllo Musica (Z-Index 50) -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-tt-black text-white rounded-full p-3 border border-tt-gold hover:bg-tt-gold hover:text-black transition-colors z-50 cursor-pointer shadow-lg" title="Music ON/OFF">
+                <span id="music-icon" class="text-xl">🔇</span>
+            </button>
+
+            <!-- Pulsanti Speech (Guida Interventi) -->
+            <div class="absolute top-20 right-4 flex flex-col gap-2 z-50">
+                <button data-target="speech1" class="nav-button bg-tt-blue text-white text-xs font-bold py-2 px-4 rounded shadow-md hover:bg-tt-cyan transition-all uppercase tracking-wider">
+                    🎤 Speech 1
+                </button>
+                <button data-target="speech2" class="nav-button bg-tt-black text-white text-xs font-bold py-2 px-4 rounded shadow-md hover:bg-tt-gold hover:text-black transition-all uppercase tracking-wider">
+                    🎤 Speech 2
+                </button>
+                <button data-target="speech3" class="nav-button bg-tt-red text-white text-xs font-bold py-2 px-4 rounded shadow-md hover:brightness-110 transition-all uppercase tracking-wider">
+                    🎥 Netflix Doc
+                </button>
+            </div>
+
+            <!-- LOGO IMAGE BLOCK -->
+            <div class="mb-6 transform hover:scale-105 transition-transform duration-500 cursor-pointer w-full max-w-md mx-auto">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_Take_That.png" alt="Take That Logo" class="w-full h-auto object-contain">
+            </div>
+            
+            <div class="flex items-center justify-center gap-4 text-sm md:text-base font-serif italic text-gray-500 border-t border-gray-300 pt-4 w-2/3 mx-auto">
+                <span>Gary</span> • <span>Robbie</span> • <span>Mark</span> • <span>Jason</span> • <span>Howard</span>
+            </div>
+        </header>
+
+        <!-- NAVIGAZIONE -->
+        <nav id="navigation" class="flex flex-wrap justify-center gap-3 mb-8">
+            <button data-target="origins" class="nav-button text-sm md:text-base bg-transparent text-tt-white border border-tt-white py-2 px-6 hover:bg-white hover:text-black transition-all duration-300 uppercase tracking-widest">
+                1990: Le Origini
+            </button>
+            <button data-target="breakup" class="nav-button text-sm md:text-base bg-transparent text-tt-cyan border border-tt-cyan py-2 px-6 hover:bg-tt-cyan hover:text-black transition-all duration-300 uppercase tracking-widest">
+                💔 1996: La Fine
+            </button>
+            <button data-target="return" class="nav-button text-sm md:text-base bg-transparent text-tt-gold border border-tt-gold py-2 px-6 hover:bg-tt-gold hover:text-black transition-all duration-300 uppercase tracking-widest">
+                👑 2006: Il Ritorno
+            </button>
+            <button data-target="netflix" class="nav-button text-sm md:text-base bg-tt-red text-white border border-tt-red py-2 px-6 hover:brightness-125 transition-all duration-300 uppercase tracking-widest">
+                🎬 Netflix
+            </button>
+             <button data-target="stats" class="nav-button text-sm md:text-base bg-gray-800 text-white border border-gray-600 py-2 px-6 hover:bg-gray-700 transition-all duration-300 uppercase tracking-widest">
+                📊 Dati
+            </button>
+        </nav>
+
+        <!-- AREA CONTENUTO PRINCIPALE -->
+        <main id="content-area" class="bg-tt-white text-tt-black p-6 md:p-10 min-h-[50vh] relative shadow-2xl rounded-sm">
+            
+            <!-- SPEECH 1: L'ASCESA E LA CADUTA (1 MINUTO) -->
+            <section id="speech1" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-cyan pb-2">
+                    <span class="text-3xl">🎙️</span>
+                    <h2 class="font-heading font-black text-3xl uppercase tracking-tighter">Speech 1: Boyband Mania (1 min)</h2>
+                </div>
+                
+                <div class="p-6 bg-gray-100 border-l-4 border-tt-cyan shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-tt-cyan uppercase tracking-widest">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed font-serif">
+                        <li>
+                            <strong>Manchester, 1990:</strong> "Tutto inizia in un magazzino di Manchester. Nigel Martin-Smith voleva creare la risposta inglese ai New Kids on the Block." 
+                        </li>
+                        <li>
+                            <strong>La Formula:</strong> Citate i 5 archetipi. Gary (il talento), Robbie (il jolly pazzo), Mark (il carino), Howard e Jason (i ballerini). Non erano solo cantanti, erano un prodotto perfetto.
+                        </li>
+                        <li>
+                            <strong>Il Delirio (1993-1995):</strong> "Non era successo, era isteria." 8 singoli consecutivi al numero uno. L'Inghilterra era ai loro piedi.
+                        </li>
+                        <li>
+                            <strong>Il Telefono Amico (1996):</strong> Il punto chiave. Quando si sciolsero il 13 Febbraio 1996, il governo britannico dovette istituire una <em>linea telefonica di supporto psicologico</em> per le teenager disperate. Una cosa mai vista prima.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 2: LA RINASCITA (1 MINUTO) -->
+            <section id="speech2" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-gold pb-2">
+                    <span class="text-3xl">👑</span>
+                    <h2 class="font-heading font-black text-3xl uppercase tracking-tighter">Speech 2: Man Band (1 min)</h2>
+                </div>
+
+                <div class="p-6 bg-gray-100 border-l-4 border-tt-gold shadow-sm">
+                    <h3 class="font-bold text-lg mb-4 text-tt-gold uppercase tracking-widest">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed font-serif">
+                        <li>
+                            <strong>Il Miracolo (2006):</strong> "Nessuno ci credeva." 10 anni dopo, tornano in 4 (senza Robbie). Doveva essere un tour nostalgico triste, invece esce <em>"Patience"</em>. È un capolavoro pop adulto.
+                        </li>
+                        <li>
+                            <strong>Il Ritorno del Figliol Prodigo (2010):</strong> Citate l'album <em>Progress</em>. Robbie Williams torna nel gruppo. La foto dei 5 insieme fa il giro del mondo. Vendono 1 milione di biglietti in 24 ore.
+                        </li>
+                        <li>
+                            <strong>Oggi:</strong> "Oggi sono in tre (Gary, Mark, Howard), ma riempiono ancora gli stadi." Hanno dimostrato che una boyband può invecchiare con dignità, trasformandosi in una "Man Band".
+                        </li>
+                        <li>
+                            <strong>Chiusura:</strong> "Dai balletti in pelle nera alle ballad d'autore: i Take That sono la colonna sonora di due generazioni."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 3: NETFLIX FLASH (30 SECONDI) -->
+            <section id="speech3" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-red pb-2">
+                    <span class="text-3xl">🎬</span>
+                    <h2 class="font-heading font-black text-3xl uppercase tracking-tighter">Docu-Focus (30 sec)</h2>
+                </div>
+
+                <div class="p-6 bg-gray-900 text-white border-l-4 border-tt-red shadow-lg">
+                    <h3 class="font-bold text-lg mb-2 text-tt-red uppercase tracking-widest">"Take That: Everything Changes"</h3>
+                    <p class="text-sm italic mb-4 text-gray-400">Disponibile ora su Netflix</p>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed font-serif">
+                        <li>
+                            <strong>La Verità di Robbie:</strong> Il documentario mostra finalmente il lato oscuro di Robbie Williams. Non era solo divertimento, era una battaglia contro la dipendenza e la gelosia verso Gary Barlow.
+                        </li>
+                        <li>
+                            <strong>Gary il Dittatore?</strong> Per anni dipinto come il "noioso", il documentario riabilita la figura di Barlow come l'unico che teneva insieme la baracca mentre tutto crollava.
+                        </li>
+                        <li>
+                            <strong>Must Watch:</strong> "Se pensate di conoscere la loro storia, guardatelo. È una lezione su fama, amicizia e perdono."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEZIONE 0: LE ORIGINI 1990 -->
+            <section id="origins" class="content-section space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-black pb-2">
+                    <span class="text-4xl">🇬🇧</span>
+                    <h2 class="font-heading font-black text-3xl uppercase">Manchester 1990</h2>
+                </div>
+                <p class="text-xl leading-relaxed font-serif italic text-gray-700">
+                    "Volevo creare una boyband che piacesse alle ragazze, ma anche ai ragazzi gay." - Nigel Martin-Smith (Manager)
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-tt-blue text-white p-6 shadow-elegant">
+                        <h3 class="font-heading text-xl text-tt-cyan mb-2">Il Casting</h3>
+                        <p class="mb-4">Non si conoscevano. Furono assemblati a tavolino:</p>
+                        <ul class="space-y-2 text-sm font-heading">
+                            <li>🎹 <strong>Gary Barlow:</strong> Il genio musicale (scriveva le canzoni).</li>
+                            <li>🎤 <strong>Robbie Williams:</strong> Il più giovane (16 anni), il ribelle.</li>
+                            <li>🕺 <strong>Howard Donald:</strong> Il ballerino breakdance.</li>
+                            <li>🕺 <strong>Jason Orange:</strong> L'altro ballerino.</li>
+                            <li>😎 <strong>Mark Owen:</strong> Il "cute one".</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 border border-gray-200">
+                        <h3 class="font-heading text-xl text-tt-black mb-2">L'Estetica "Leather"</h3>
+                        <p class="text-sm text-gray-600 mb-4">I primi video (come "Do What U Like") erano audaci, pieni di pelle, gelatina e nudi parziali. Era una strategia mirata per colpire il pubblico dei club gay prima di quello delle teenager.</p>
+                        <div class="bg-gray-100 p-2 text-center font-bold text-xs uppercase tracking-widest">
+                            Hit: "It Only Takes A Minute"
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 1: 1996 BREAKUP -->
+            <section id="breakup" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-cyan pb-2">
+                    <span class="text-4xl">💔</span>
+                    <h2 class="font-heading font-black text-3xl uppercase">13 Febbraio 1996</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <p class="text-lg leading-relaxed mb-4">
+                            <strong>L'Addio di Robbie.</strong> Nel 1995, Robbie lascia la band durante le prove per gli MTV EMA. Capelli biondi ossigenati, feste con gli Oasis a Glastonbury, alcol. Era fuori controllo.
+                        </p>
+                        <p class="text-lg leading-relaxed">
+                            <strong>La Fine.</strong> I restanti 4 provano a continuare, ma annunciano lo scioglimento l'anno dopo. L'immagine delle fan che piangono fuori dagli uffici della casa discografica è storia della TV.
+                        </p>
+                    </div>
+                    <div class="bg-gray-100 p-6 border-l-4 border-black">
+                        <h3 class="font-heading text-xl mb-2">Il Telefono Amico</h3>
+                        <p class="text-sm italic mb-4">Una storia vera che sembra leggenda.</p>
+                        <p class="font-serif">
+                            Il governo britannico e varie associazioni di beneficenza istituirono linee telefoniche di emergenza ("helplines") per consolare le migliaia di adolescenti che minacciavano il suicidio o cadevano in depressione dopo l'annuncio.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 2: 2006 RETURN -->
+            <section id="return" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-gold pb-2">
+                    <span class="text-4xl">👑</span>
+                    <h2 class="font-heading font-black text-3xl uppercase">The Greatest Day</h2>
+                </div>
+                
+                <p class="mb-4 text-lg text-center font-serif italic">Da "Boyband finita" a "Tesoro Nazionale Inglese".</p>
+
+                <div class="grid md:grid-cols-3 gap-4 text-center">
+                    <div class="p-4 bg-tt-black text-white hover:-translate-y-1 transition-transform border-t-4 border-tt-gold">
+                        <h3 class="font-bold text-lg text-tt-gold">Beautiful World</h3>
+                        <p class="text-xs mt-2 uppercase tracking-wide">2006 • Il ritorno a 4</p>
+                        <p class="text-sm mt-2 italic">"Patience", "Shine"</p>
+                    </div>
+                    <div class="p-4 bg-tt-black text-white hover:-translate-y-1 transition-transform border-t-4 border-tt-red">
+                        <h3 class="font-bold text-lg text-tt-red">Progress</h3>
+                        <p class="text-xs mt-2 uppercase tracking-wide">2010 • Il ritorno a 5</p>
+                        <p class="text-sm mt-2 italic">"The Flood"</p>
+                    </div>
+                    <div class="p-4 bg-tt-black text-white hover:-translate-y-1 transition-transform border-t-4 border-tt-cyan">
+                        <h3 class="font-bold text-lg text-tt-cyan">Odyssey</h3>
+                        <p class="text-xs mt-2 uppercase tracking-wide">2018 • Il trio</p>
+                        <p class="text-sm mt-2 italic">Gary, Mark, Howard</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: NETFLIX -->
+            <section id="netflix" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-tt-red pb-2">
+                    <span class="text-4xl">🍿</span>
+                    <h2 class="font-heading font-black text-3xl uppercase">Il Documentario</h2>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="netflix-card p-8 text-white shadow-2xl rounded-sm">
+                        <h3 class="font-heading text-4xl mb-2 text-tt-red tracking-tighter">NETFLIX</h3>
+                        <h4 class="text-xl font-bold mb-4">"Look Back, Don't Stare" & Nuovi Doc</h4>
+                        <p class="mb-4 text-gray-300 font-serif">
+                            Il catalogo Netflix (e altre piattaforme) ospita documentari che svelano il dietro le quinte. Vediamo Robbie e Gary confrontarsi per la prima volta sulle loro insicurezze.
+                        </p>
+                        <button class="bg-tt-red text-white py-2 px-4 font-bold text-sm uppercase tracking-widest hover:bg-red-700 transition-colors">
+                            Guarda Ora
+                        </button>
+                    </div>
+                    
+                    <div class="p-4">
+                        <h3 class="font-heading text-xl mb-4">Cosa impariamo?</h3>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <span class="text-tt-red mr-2">➤</span>
+                                <p class="text-sm"><strong>La Depressione di Gary:</strong> Dopo lo scioglimento, mentre Robbie diventava una superstar solista, Gary perse il contratto e ingrassò fino a 100kg, nascondendosi in casa.</p>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-tt-red mr-2">➤</span>
+                                <p class="text-sm"><strong>L'enigma Jason Orange:</strong> Il membro che ha deciso di lasciare definitivamente nel 2014 per vivere una vita normale, sparendo dai riflettori.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: ANALISI CHART -->
+            <section id="stats" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-2 border-gray-800 pb-2">
+                    <span class="text-4xl">📊</span>
+                    <h2 class="font-heading font-black text-3xl uppercase">Chi Cantava?</h2>
+                </div>
+
+                <p class="text-center italic text-gray-500 mb-4">Lead vocals nei singoli (Anni '90)</p>
+
+                <div class="chart-container mb-8">
+                    <canvas id="ttChart"></canvas>
+                </div>
+
+                <!-- STATS BOTTOM -->
+                <div class="grid grid-cols-3 gap-4 mt-8 text-center font-heading">
+                    <div class="p-2 border border-gray-300">
+                        <div class="text-3xl text-tt-gold">12</div>
+                        <div class="text-xs text-gray-500 uppercase">Singoli N.1 UK</div>
+                    </div>
+                    <div class="p-2 border border-gray-300">
+                        <div class="text-3xl text-tt-blue">8</div>
+                        <div class="text-xs text-gray-500 uppercase">Brit Awards</div>
+                    </div>
+                    <div class="p-2 border border-gray-300">
+                        <div class="text-3xl text-tt-red">45M+</div>
+                        <div class="text-xs text-gray-500 uppercase">Dischi Venduti</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-10 p-6 text-gray-400 border-t border-gray-800">
+            <p class="font-heading uppercase tracking-widest text-sm mb-1 text-tt-gold">Take That: The Legacy</p>
+            <p class="text-xs font-serif italic">"Whatever I said, whatever I did, I didn't mean it..."</p>
+        </footer>
+    </div>
+
+    <!-- START OVERLAY -->
+    <div id="start-overlay" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center hidden">
+        <div class="text-center p-8 bg-tt-white shadow-glow max-w-md w-[85%] border-t-4 border-tt-gold">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/72/Logo_Take_That.png" alt="Take That" class="w-1/2 h-auto mx-auto mb-8 object-contain">
+            <h2 class="font-heading font-black text-2xl mb-2 text-tt-black uppercase">Pronto per il tour?</h2>
+            <p class="font-serif italic text-gray-600 mb-6">Attiva l'audio per l'esperienza completa.</p>
+            <button id="btn-enter" class="bg-tt-black text-white font-heading text-lg py-3 px-8 hover:bg-tt-gold hover:text-black transition-colors uppercase tracking-widest">
+                ENTRA
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const chartCanvas = document.getElementById('ttChart');
+            const audio = document.getElementById('theme-audio');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+            const startOverlay = document.getElementById('start-overlay');
+            const enterBtn = document.getElementById('btn-enter');
+
+            let myChart;
+            
+            // --- AUDIO LOGIC ---
+            audio.volume = 0.4; 
+
+            function updateMusicIcon(playing) {
+                if (playing) {
+                    musicIcon.textContent = '👑'; // Crown
+                    musicToggle.classList.add('music-playing');
+                } else {
+                    musicIcon.textContent = '🔇';
+                    musicToggle.classList.remove('music-playing');
+                }
+            }
+
+            const tryPlayMusic = async () => {
+                try {
+                    await audio.play();
+                    updateMusicIcon(true);
+                    startOverlay.classList.add('hidden');
+                } catch (err) {
+                    console.log("Autoplay blocked:", err);
+                    updateMusicIcon(false);
+                    startOverlay.classList.remove('hidden');
+                }
+            };
+
+            // 1. Try immediately
+            tryPlayMusic();
+
+            // 2. Overlay Button
+            enterBtn.addEventListener('click', () => {
+                tryPlayMusic();
+                startOverlay.classList.add('hidden');
+            });
+
+            const safePause = () => {
+                audio.pause();
+                updateMusicIcon(false);
+            };
+
+            musicToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (audio.paused) {
+                    tryPlayMusic();
+                } else {
+                    safePause();
+                }
+            });
+
+            // --- NAVIGATION LOGIC ---
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+                        sections.forEach(section => section.classList.add('hidden'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) targetSection.classList.remove('hidden');
+                        
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        if (!button.dataset.target.startsWith('speech')) {
+                            button.classList.add('active');
+                        }
+                        
+                        if (targetId === 'stats' && !myChart) {
+                            initChart();
+                        }
+                    });
+                });
+                
+                // Default tab
+                const firstNavButton = document.querySelector('.nav-button:not([data-target^="speech"])');
+                if (firstNavButton) firstNavButton.click();
+            }
+
+            function initChart() {
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    
+                    const data = {
+                        labels: ['Gary Barlow', 'Robbie Williams', 'Mark Owen', 'Howard/Jason'],
+                        datasets: [{
+                            label: 'Lead Vocals (90s Era)',
+                            data: [60, 20, 15, 5],
+                            backgroundColor: [
+                                '#C5A059', // Gold (Gary)
+                                '#E11D48', // Red (Robbie)
+                                '#00C2CB', // Cyan (Mark)
+                                '#1E293B'  // Blue (Others)
+                            ],
+                            borderColor: '#ffffff',
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    };
+
+                    const config = {
+                        type: 'doughnut',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: { family: 'Montserrat', size: 12 },
+                                        color: '#333'
+                                    }
+                                },
+                                tooltip: {
+                                    titleFont: { family: 'Montserrat' },
+                                    bodyFont: { family: 'Playfair Display' },
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ` ${context.label}: ${context.raw}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    myChart = new Chart(ctx, config);
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
