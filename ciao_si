@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ciao & Sì Piaggio - Libertà a Miscela</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font: Shrikhand (Simile al logo Ciao) e DM Sans (Geometrico 70s) -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Shrikhand&display=swap" rel="stylesheet">
+    
+    <!-- Palette: Arancio 1967, Blu Piaggio, Crema Vintage -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'ciao-orange': '#FF5722',  // L'arancione iconico del Ciao SC
+                        'piaggio-blue': '#00509D', // Blu istituzionale
+                        'vintage-cream': '#FFF8E1',// Sfondo carta invecchiata
+                        'si-red': '#D32F2F',       // Rosso del Sì Montecarlo
+                        'oil-black': '#212121',    // Nero marmitta
+                        'cinema-gold': '#FFD700',  // Oro Cinema
+                    },
+                    fontFamily: {
+                        logo: ['Shrikhand', 'cursive'], 
+                        body: ['DM Sans', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'retro': '6px 6px 0px #212121',
+                        'soft': '0 4px 20px rgba(255, 87, 34, 0.2)',
+                    },
+                    backgroundImage: {
+                        'halftone': 'radial-gradient(#00509D 1px, transparent 1px)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        
+        body {
+            background-color: #FFF8E1;
+            background-size: 20px 20px;
+            background-image: radial-gradient(#FF5722 15%, transparent 16%), radial-gradient(#FF5722 15%, transparent 16%);
+            background-position: 0 0, 10px 10px;
+            opacity: 1;
+        }
+
+        /* Stile Bottoni Navigazione */
+        .nav-button.active {
+            transform: translateY(-4px);
+            background-color: #FF5722;
+            color: #FFF;
+            border-color: #212121;
+            box-shadow: 4px 4px 0px #212121;
+        }
+
+        /* Stile speciale per le sezioni Speech (Simil Foglio Istruzioni) */
+        .speech-card {
+            background-color: #fff;
+            border: 3px solid #212121;
+            box-shadow: 8px 8px 0px #00509D;
+            transform: rotate(-1deg);
+        }
+
+        /* Animazione pulsante musica (Vibrazione motore) */
+        @keyframes rumble {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        .music-playing {
+            animation: rumble 0.5s infinite linear;
+            background-color: #FF5722 !important;
+            color: #FFF !important;
+            border-color: #212121 !important;
+        }
+
+        /* Logo Text Shadow 70s Style */
+        .logo-text {
+            text-shadow: 3px 3px 0px #FFF, 6px 6px 0px #00509D;
+        }
+    </style>
+</head>
+<body class="font-body text-oil-black antialiased selection:bg-ciao-orange selection:text-white">
+
+    <!-- AUDIO PLAYER -->
+    <audio id="theme-audio" loop preload="auto" autoplay>
+        <source src="si_piaggio_start.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+    </audio>
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <!-- HEADER STYLE VINTAGE 70s -->
+        <header class="text-center mb-10 bg-white p-8 border-4 border-oil-black shadow-retro relative overflow-hidden group flex flex-col items-center justify-center">
+            
+            <!-- Pulsante Controllo Musica -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-vintage-cream text-oil-black rounded-full p-3 border-2 border-oil-black hover:bg-ciao-orange hover:text-white transition-colors z-50 cursor-pointer" title="Accendi il motore">
+                <span id="music-icon" class="text-xl">🛵</span>
+            </button>
+
+            <!-- Pulsanti Speech (Guida Interventi) -->
+            <div class="absolute top-20 right-4 flex flex-col gap-2 z-50">
+                <button data-target="speech1" class="nav-button bg-piaggio-blue text-white text-xs font-bold py-1 px-3 rounded border-2 border-oil-black shadow-[2px_2px_0px_#000] hover:translate-x-1 transition-transform uppercase tracking-wider">
+                    🎤 Speech 1
+                </button>
+                <button data-target="speech2" class="nav-button bg-si-red text-white text-xs font-bold py-1 px-3 rounded border-2 border-oil-black shadow-[2px_2px_0px_#000] hover:translate-x-1 transition-transform uppercase tracking-wider">
+                    🎤 Speech 2
+                </button>
+            </div>
+
+            <!-- LOGO BLOCK -->
+            <div class="mb-4 transform hover:scale-105 transition-transform duration-300 w-full max-w-md mx-auto relative">
+                <h1 class="font-logo text-7xl sm:text-9xl text-ciao-orange logo-text tracking-tight lowercase transform -rotate-3">
+                    ciao
+                </h1>
+                <div class="absolute -bottom-2 right-10 bg-si-red text-white font-body font-bold text-xl px-2 border-2 border-black transform rotate-6">
+                    & SÌ
+                </div>
+            </div>
+            
+            <p class="font-bold text-gray-500 text-lg uppercase tracking-widest border-t-2 border-oil-black pt-4 w-2/3 mx-auto mt-4">
+                L'indipendenza a due ruote
+            </p>
+        </header>
+
+        <!-- NAVIGAZIONE -->
+        <nav id="navigation" class="flex flex-wrap justify-center gap-4 mb-8">
+            <button data-target="genesi" class="nav-button font-body font-bold text-xl bg-white text-oil-black border-2 border-oil-black py-2 px-6 shadow-[4px_4px_0px_#FF5722] transition-all duration-200 uppercase">
+                🛠️ Genesi 1967
+            </button>
+            <button data-target="si_focus" class="nav-button font-body font-bold text-xl bg-si-red text-white border-2 border-oil-black py-2 px-6 shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase">
+                💎 Focus: Il Sì
+            </button>
+            <button data-target="cinema" class="nav-button font-body font-bold text-xl bg-cinema-gold text-oil-black border-2 border-oil-black py-2 px-6 shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase">
+                🎬 Cinema & TV
+            </button>
+            <button data-target="sociale" class="nav-button font-body font-bold text-xl bg-piaggio-blue text-white border-2 border-oil-black py-2 px-6 shadow-[4px_4px_0px_#000] transition-all duration-200 uppercase">
+                📢 Sardomobili
+            </button>
+            <button data-target="tuning" class="nav-button font-body font-bold text-xl bg-oil-black text-white border-2 border-oil-black py-2 px-6 shadow-[4px_4px_0px_#00509D] transition-all duration-200 uppercase">
+                🔧 Tuning
+            </button>
+             <button data-target="stats" class="nav-button font-body font-bold text-xl bg-vintage-cream text-oil-black border-2 border-oil-black py-2 px-6 shadow-[4px_4px_0px_#00509D] transition-all duration-200 uppercase">
+                📊 Dati
+            </button>
+        </nav>
+
+        <!-- AREA CONTENUTO PRINCIPALE -->
+        <main id="content-area" class="bg-white border-4 border-oil-black p-6 md:p-10 min-h-[50vh] relative shadow-retro rounded-lg">
+            
+            <!-- SPEECH 1 -->
+            <section id="speech1" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-ciao-orange pb-2">
+                    <span class="text-4xl">🎙️</span>
+                    <h2 class="font-logo text-4xl text-oil-black">Intervento 1: Non è una bici (1 min)</h2>
+                </div>
+                <div class="speech-card p-6">
+                    <h3 class="font-bold text-lg mb-2 text-ciao-orange uppercase tracking-widest bg-black inline-block px-2 text-white">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4 font-medium">
+                        <li><strong>L'Anno Zero (1967):</strong> "Siamo nell'estate del 1967. I Beatles cantano <em>All You Need Is Love</em>, e a Pontedera la Piaggio fa una magia."</li>
+                        <li><strong>L'Idea Geniale:</strong> "Non è una moto (troppo costosa), non è una Vespa (troppo pesante), non è una bici (troppo faticosa). È il <strong>Ciao</strong>."</li>
+                        <li><strong>Libertà a 14 anni:</strong> "Improvvisamente, a 14 anni non eri più un bambino a piedi. Eri un pilota."</li>
+                        <li><strong>Le Sardomobili:</strong> Citate la pubblicità geniale: "Le auto sono scatole di sardine in coda. Il Ciao passa ovunque."</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 2 -->
+            <section id="speech2" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-si-red pb-2">
+                    <span class="text-4xl">🔧</span>
+                    <h2 class="font-logo text-4xl text-oil-black">Intervento 2: Mani sporche (1 min)</h2>
+                </div>
+                <div class="speech-card p-6" style="border-color: #D32F2F; box-shadow: 8px 8px 0px #212121;">
+                    <h3 class="font-bold text-lg mb-2 text-si-red uppercase tracking-widest bg-black inline-block px-2 text-white">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4 font-medium">
+                        <li><strong>L'Evoluzione (Il Sì):</strong> "Fine anni '70. Arriva il <strong>Sì</strong>. Più moderno, sella lunga, cerchi in lega. Era la versione 'lusso'."</li>
+                        <li><strong>Il Rito della Miscela:</strong> "Benzinaio, monetina, olio, misurino. E se sbagliavi percentuale? Fumo bianco."</li>
+                        <li><strong>Elaborare è Legge:</strong> "Marmitta Polini, carburatore 13/13. Il suono cambiava da un ronzio a un urlo."</li>
+                        <li><strong>Chiusura:</strong> "Ci hanno insegnato la meccanica e l'indipendenza."</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEZIONE GENESI -->
+            <section id="genesi" class="content-section space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-oil-black pb-2">
+                    <span class="text-4xl">🛠️</span>
+                    <h2 class="font-logo text-4xl text-ciao-orange">L'Ingegneria Semplice</h2>
+                </div>
+                <p class="text-lg leading-relaxed">
+                    Progettato dall'ingegner Bruno Gaddi, il Ciao nasce per riempire il vuoto tra la bicicletta e la Vespa. Doveva essere economico, leggero e guidabile anche dalle donne.
+                </p>
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-ciao-orange text-white p-5 border-4 border-black transform rotate-1">
+                        <h3 class="font-logo text-2xl mb-2">Il Motore</h3>
+                        <p class="font-bold text-xl">Monocilindrico 2 Tempi</p>
+                        <p class="text-sm mt-1">Raffreddato ad aria forzata. Consumo: 1 litro per 50-60 km.</p>
+                    </div>
+                    <div class="bg-white text-oil-black p-5 border-4 border-piaggio-blue transform -rotate-1">
+                        <h3 class="font-logo text-2xl mb-2 text-piaggio-blue">Il Telaio</h3>
+                        <p class="font-bold text-xl">Lamiera Stampata</p>
+                        <p class="text-sm mt-1">Il serbatoio ERA il telaio. Peso totale a secco: meno di 40 kg.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE SI FOCUS -->
+            <section id="si_focus" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-si-red pb-2">
+                    <span class="text-4xl">💎</span>
+                    <h2 class="font-logo text-4xl text-oil-black">Piaggio Sì: Il "Lusso" (1978)</h2>
+                </div>
+                <p class="text-lg leading-relaxed italic border-l-4 border-si-red pl-4">
+                    "Tutto ebbe inizio col Ciao, ma per chi cercava qualcosa di più ricercato e confortevole, la risposta era una sola: Sì."
+                </p>
+                <div class="grid md:grid-cols-2 gap-8 mt-6">
+                    <div class="bg-white p-6 border-2 border-oil-black shadow-[4px_4px_0px_#D32F2F]">
+                        <h3 class="font-bold text-xl text-si-red mb-3 uppercase">L'Evoluzione Tecnica</h3>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>Sospensione Posteriore:</strong> Sistema Cantilever (il Ciao era rigido!).</li>
+                            <li><strong>Forcella Anteriore:</strong> Telescopica.</li>
+                            <li><strong>Cerchi:</strong> Opzione ruote in lega a 4 razze.</li>
+                            <li><strong>Sella:</strong> Lunga e comoda.</li>
+                        </ul>
+                    </div>
+                    <div class="bg-vintage-cream p-6 border-2 border-oil-black">
+                        <h3 class="font-bold text-xl text-piaggio-blue mb-3 uppercase">Timeline & Curiosità</h3>
+                        <div class="space-y-3 text-sm">
+                            <p>💰 <strong>Prezzo 1979:</strong> ~350.000 Lire.</p>
+                            <p>⚡ <strong>1987 (Seconda Serie):</strong> Accensione elettronica.</p>
+                            <p>🔥 <strong>1992 (FL2):</strong> Design arrotondato.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE CINEMA & TV (AGGIORNATA) -->
+            <section id="cinema" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-cinema-gold pb-2">
+                    <span class="text-4xl">🎬</span>
+                    <h2 class="font-logo text-4xl text-oil-black">Star del Cinema & TV</h2>
+                </div>
+                
+                <p class="text-lg text-center font-bold mb-4 bg-cinema-gold text-oil-black inline-block px-4 py-1 rotate-1">
+                    "Il mezzo di trasporto ufficiale della Commedia all'Italiana"
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-4">
+                    <!-- Sapore di Mare -->
+                    <div class="bg-white p-6 border-2 border-piaggio-blue shadow-soft">
+                        <h3 class="font-bold text-xl text-piaggio-blue uppercase mb-2">Sapore di Mare (1983)</h3>
+                        <p class="text-sm italic mb-2">Al Cinema</p>
+                        <p>Il film manifesto dell'estate. Il Ciao è il protagonista delle scorribande in Versilia. Rappresenta la libertà dei ragazzi che sfrecciano tra gli stabilimenti.</p>
+                    </div>
+
+                    <!-- Eccezzziunale -->
+                    <div class="bg-white p-6 border-2 border-si-red shadow-soft">
+                        <h3 class="font-bold text-xl text-si-red uppercase mb-2">Eccezzziunale (1982)</h3>
+                        <p class="text-sm italic mb-2">Diego Abatantuono</p>
+                        <p>Il "Terruncello" milanista Donato si muove per la metropoli su un Ciao "truccato", simbolo del proletariato urbano agile e rumoroso.</p>
+                    </div>
+
+                    <!-- I Ragazzi della 3C -->
+                    <div class="bg-white p-6 border-2 border-oil-black shadow-soft col-span-1 md:col-span-2">
+                        <h3 class="font-bold text-xl text-ciao-orange uppercase mb-2">I Ragazzi della 3ª C (1987)</h3>
+                        <p class="text-sm italic mb-2">In TV</p>
+                        <p>La serie cult che ha definito gli anni '80 in Italia. Chicco Lazzaretti e Bruno Sacchi usavano spesso il Ciao (o il Sì) per muoversi a Roma. Era l'alternativa "cool" e accessibile al vespone dei "paninari" più ricchi.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE SARDOMOBILI (RIPRISTINATA) -->
+            <section id="sociale" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-piaggio-blue pb-2">
+                    <span class="text-4xl">📢</span>
+                    <h2 class="font-logo text-4xl text-oil-black">Le Sardomobili</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-8 items-center">
+                    <div class="bg-piaggio-blue p-6 border-4 border-black text-white shadow-[8px_8px_0px_#FFA000]">
+                        <h3 class="font-bold text-xl uppercase mb-2">La Campagna Pubblicitaria</h3>
+                        <p class="text-sm leading-relaxed">
+                            "Le auto sono scatole di sardine in coda. Il Ciao passa ovunque."<br><br>
+                            Una delle campagne più efficaci della storia italiana. Piaggio inventò il termine dispregiativo <strong>"Sardomobili"</strong> per le auto, posizionando il Ciao come l'antidoto intelligente al traffico moderno.
+                        </p>
+                    </div>
+                    
+                    <div class="p-4 bg-vintage-cream border-2 border-oil-black">
+                        <ul class="space-y-4 font-bold text-oil-black">
+                            <li class="flex items-center">
+                                <span class="text-3xl mr-3">👩‍🎤</span>
+                                <p><strong>Emancipazione Femminile:</strong> Leggero (40kg) e pulito (motore coperto), fu il primo mezzo davvero accessibile alle donne in città.</p>
+                            </li>
+                            <li class="flex items-center">
+                                <span class="text-3xl mr-3">🎓</span>
+                                <p><strong>Il Premio:</strong> Per generazioni, il Ciao è stato il regalo standard per la promozione di Terza Media.</p>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE TUNING (CHIARITA E ARRICCHITA) -->
+            <section id="tuning" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-si-red pb-2">
+                    <span class="text-4xl">🔧</span>
+                    <h2 class="font-logo text-4xl text-oil-black">L'Arte dell'Elaborazione</h2>
+                </div>
+                
+                <p class="text-lg italic mb-4 text-center">"Originale faceva 45 km/h. Ma nessuno lo lasciava originale."</p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white p-5 border-2 border-black rounded shadow-sm">
+                        <h4 class="font-bold text-si-red text-xl mb-3 uppercase">1. La Sacra Trinità</h4>
+                        <ul class="space-y-3 font-medium text-sm">
+                            <li class="border-l-4 border-si-red pl-3">
+                                <strong>La Marmitta (Il Sound):</strong> Le originali erano tappate. Si metteva la **Proma** o la **Polini a serpentone**. Per farsi sentire prima di farsi vedere.
+                            </li>
+                            <li class="border-l-4 border-si-red pl-3">
+                                <strong>Il Carburatore (Il Respiro):</strong> Il mitico **13 pari (13/13)**. L'originale era minuscolo (12/10). Col 13 il motore "beveva" e andava.
+                            </li>
+                            <li class="border-l-4 border-si-red pl-3">
+                                <strong>Il Gruppo Termico (La Potenza):</strong> Il 65cc Polini o Malossi. Il segreto di Pulcinella per sorpassare in salita.
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="bg-oil-black text-white p-5 border-2 border-white rounded shadow-sm">
+                        <h4 class="font-bold text-ciao-orange text-xl mb-3 uppercase">2. Il Grande Dilemma</h4>
+                        <p class="text-sm mb-3 italic text-gray-300">La scelta filosofica:</p>
+                        <ul class="space-y-4 font-medium">
+                            <li class="flex items-start">
+                                <span class="text-2xl mr-2">🚀</span>
+                                <div>
+                                    <strong>Puleggia (Velocità):</strong>
+                                    <p class="text-xs text-gray-300 mt-1">Marcia unica lunga. Al semaforo dovevi pedalare (l'onta), ma in rettilineo volavi.</p>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-2xl mr-2">🐎</span>
+                                <div>
+                                    <strong>Variatore (Scatto):</strong>
+                                    <p class="text-xs text-gray-300 mt-1">Come gli scooter moderni. Scatto bruciante, impennata facile, ma meno velocità massima.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: ANALISI CHART -->
+            <section id="stats" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-vintage-cream pb-2">
+                    <span class="text-4xl">📊</span>
+                    <h2 class="font-logo text-4xl text-oil-black">Utilizzo Reale</h2>
+                </div>
+
+                <div class="chart-container mb-8">
+                    <canvas id="ciaoChart"></canvas>
+                </div>
+
+                <!-- STATS BOTTOM -->
+                <div class="grid grid-cols-2 gap-4 mt-8 text-center font-bold">
+                    <div class="p-2 bg-ciao-orange text-white border-2 border-black">
+                        <div class="text-3xl">3.5M+</div>
+                        <div class="text-xs font-mono uppercase">Esemplari Venduti</div>
+                    </div>
+                    <div class="p-2 bg-piaggio-blue text-white border-2 border-black">
+                        <div class="text-3xl">40</div>
+                        <div class="text-xs font-mono uppercase">Anni di Produzione</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-8 p-4 bg-oil-black text-white border-t-8 border-ciao-orange">
+            <p class="font-logo text-2xl text-white mb-1">Piaggio</p>
+            <p class="text-xs opacity-70 font-mono">Fan Site 2025. Attenzione: usare sempre il casco e miscela al 2%.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const chartCanvas = document.getElementById('ciaoChart');
+            const audio = document.getElementById('theme-audio');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+
+            let myChart;
+            
+            // --- AUDIO LOGIC ---
+            audio.volume = 0.4; 
+
+            function updateMusicIcon(playing) {
+                if (playing) {
+                    musicIcon.textContent = '🛵'; 
+                    musicToggle.classList.add('music-playing');
+                } else {
+                    musicIcon.textContent = '🔇';
+                    musicToggle.classList.remove('music-playing');
+                }
+            }
+
+            const safePlay = () => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => updateMusicIcon(true))
+                    .catch(error => {
+                        console.log("Autoplay blocked:", error);
+                        updateMusicIcon(false);
+                    });
+                }
+            };
+
+            const safePause = () => {
+                audio.pause();
+                updateMusicIcon(false);
+            };
+
+            musicToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (audio.paused) safePlay();
+                else safePause();
+            });
+
+            // Autoplay attempt with fallback
+            const autoPlayPromise = audio.play();
+            if (autoPlayPromise !== undefined) {
+                autoPlayPromise.then(() => updateMusicIcon(true)).catch(() => {
+                    updateMusicIcon(false);
+                    const playOnInteraction = () => {
+                        safePlay();
+                        document.removeEventListener('click', playOnInteraction);
+                    };
+                    document.addEventListener('click', playOnInteraction, { once: true });
+                });
+            }
+
+            // --- NAVIGATION LOGIC ---
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+                        sections.forEach(section => section.classList.add('hidden'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) targetSection.classList.remove('hidden');
+                        
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        if (!button.dataset.target.startsWith('speech')) {
+                            button.classList.add('active');
+                        }
+                        
+                        if (targetId === 'stats' && !myChart) {
+                            initChart();
+                        }
+                    });
+                });
+                
+                // Set default tab to GENESI
+                const firstNavButton = document.querySelector('.nav-button[data-target="genesi"]');
+                if (firstNavButton) firstNavButton.click();
+            }
+
+            function initChart() {
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    
+                    const data = {
+                        labels: ['Tragitto Casa-Scuola', 'Impennate al parchetto', 'Spinto a mano (Benzina finita)', 'Fermo in Garage (Punizione)'],
+                        datasets: [{
+                            label: 'Ciclo di Vita del Ciao',
+                            data: [40, 30, 20, 10],
+                            backgroundColor: [
+                                '#FF5722', // Orange
+                                '#D32F2F', // Red
+                                '#212121', // Black
+                                '#FFF8E1'  // Cream
+                            ],
+                            borderColor: '#000',
+                            borderWidth: 3,
+                            hoverOffset: 10
+                        }]
+                    };
+
+                    const config = {
+                        type: 'doughnut',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: { family: 'DM Sans', size: 14 },
+                                        color: '#212121'
+                                    }
+                                },
+                                tooltip: {
+                                    titleFont: { family: 'Shrikhand' },
+                                    bodyFont: { family: 'DM Sans' }
+                                }
+                            }
+                        }
+                    };
+
+                    myChart = new Chart(ctx, config);
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
