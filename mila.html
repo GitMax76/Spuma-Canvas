@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mila e Shiro - La Grande Bugia della Pallavolo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Font: Teko (Sportivo/Action) e Nunito (Leggibile) -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Teko:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Palette: Seven Fighters (Blu/Rosso/Bianco) + Parquet della palestra -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'seven-blue': '#1D4ED8',   // Blu maglia Seven Fighters
+                        'mila-red': '#EF4444',     // Rosso capelli Mila / Giappone
+                        'volley-yellow': '#FDE047',// Giallo pallone Mikasa
+                        'court-wood': '#FDE68A',   // Giallo parquet
+                        'line-white': '#FFFFFF',
+                    },
+                    fontFamily: {
+                        heading: ['Teko', 'sans-serif'], 
+                        body: ['Nunito', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'anime': '6px 6px 0px #1E3A8A',
+                        'smash': '0 0 20px rgba(239, 68, 68, 0.5)',
+                    },
+                    backgroundImage: {
+                        'parquet': "repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.05) 40px, rgba(0,0,0,0.05) 42px)"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            height: 300px;
+        }
+        
+        body {
+            background-color: #FDE68A;
+            background-image: 
+                repeating-linear-gradient(0deg, transparent, transparent 100px, rgba(255,255,255,0.3) 100px, rgba(255,255,255,0.3) 102px),
+                repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 42px);
+        }
+
+        .nav-button.active {
+            transform: scale(1.05) rotate(-2deg);
+            background-color: #1D4ED8;
+            color: #FFF;
+            border-color: #FFF;
+            box-shadow: 4px 4px 0px #EF4444;
+        }
+
+        .speech-card {
+            background-color: #fff;
+            border: 4px solid #1D4ED8;
+            border-radius: 8px;
+            box-shadow: 6px 6px 0px #EF4444;
+        }
+        
+        /* Animazione pulsante musica (Battuta) */
+        @keyframes smash {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.1); }
+            100% { transform: translateY(0) scale(1); }
+        }
+        .music-playing {
+            animation: smash 0.6s infinite ease-in-out;
+            background-color: #EF4444 !important;
+            color: #FFF !important;
+            border-color: #FFF !important;
+        }
+    </style>
+</head>
+<body class="font-body text-gray-900 antialiased selection:bg-seven-blue selection:text-white">
+
+    <!-- AUDIO PLAYER -->
+    <audio id="theme-audio" loop preload="auto" autoplay>
+        <source src="mila_shiro_theme.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+    </audio>
+
+    <div id="app-container" class="container mx-auto p-4 md:p-8 max-w-5xl min-h-screen">
+
+        <!-- HEADER STYLE ANIME -->
+        <header class="text-center mb-10 bg-seven-blue p-8 rounded-xl border-4 border-line-white shadow-anime relative overflow-hidden group flex flex-col items-center justify-center">
+            
+            <!-- Linee del campo da pallavolo sullo sfondo dell'header -->
+            <div class="absolute inset-0 border-8 border-white opacity-20 m-4 pointer-events-none"></div>
+            <div class="absolute inset-y-0 left-1/2 w-2 bg-white opacity-20 pointer-events-none"></div>
+
+            <!-- Pulsante Controllo Musica -->
+            <button id="music-toggle" class="absolute top-4 right-4 bg-volley-yellow text-seven-blue rounded-full p-3 border-2 border-line-white shadow-sm hover:bg-mila-red hover:text-white transition-colors z-50 cursor-pointer" title="Fischio d'inizio">
+                <span id="music-icon" class="text-2xl">🏐</span>
+            </button>
+
+            <!-- Pulsanti Speech -->
+            <div class="absolute top-20 right-4 flex flex-col gap-2 z-50">
+                <button data-target="speech1" class="nav-button bg-mila-red text-white text-xs font-bold py-1 px-3 rounded border-2 border-white shadow-[2px_2px_0px_#000] hover:-translate-y-1 transition-transform uppercase tracking-wider">
+                    🎤 Speech 1 (Le Bugie)
+                </button>
+                <button data-target="speech2" class="nav-button bg-volley-yellow text-seven-blue text-xs font-bold py-1 px-3 rounded border-2 border-white shadow-[2px_2px_0px_#000] hover:-translate-y-1 transition-transform uppercase tracking-wider">
+                    🎤 Speech 2 (Le due Mimì)
+                </button>
+            </div>
+
+            <h1 class="font-heading text-6xl sm:text-8xl text-line-white drop-shadow-[4px_4px_0_#EF4444] mb-1 uppercase tracking-wide leading-none transform -skew-x-6">
+                Mila e Shiro
+            </h1>
+            <h2 class="font-heading text-3xl text-volley-yellow drop-shadow-[2px_2px_0_#000] mb-4 uppercase tracking-widest">
+                Due cuori (finti) nella pallavolo
+            </h2>
+            
+            <div class="bg-mila-red text-white font-bold px-4 py-1 rounded text-sm uppercase tracking-widest border-2 border-white shadow-sm z-10">
+                Titolo Originale: Attacker YOU! (1984)
+            </div>
+        </header>
+
+        <!-- NAVIGAZIONE -->
+        <nav id="navigation" class="flex flex-wrap justify-center gap-3 mb-8">
+            <button data-target="genesi" class="nav-button font-heading text-2xl bg-seven-blue text-volley-yellow border-2 border-seven-blue py-1 px-6 rounded shadow-anime transition-all duration-200 uppercase">
+                🌱 La Genesi
+            </button>
+            <button data-target="bugia" class="nav-button font-heading text-2xl bg-white text-seven-blue border-2 border-seven-blue py-1 px-6 rounded shadow-anime transition-all duration-200 uppercase">
+                🤥 Le Bugie Italiane
+            </button>
+            <button data-target="mimi" class="nav-button font-heading text-2xl bg-mila-red text-white border-2 border-seven-blue py-1 px-6 rounded shadow-anime transition-all duration-200 uppercase">
+                👯 Le (vere) Due Mimì
+            </button>
+            <button data-target="manga" class="nav-button font-heading text-2xl bg-volley-yellow text-seven-blue border-2 border-seven-blue py-1 px-6 rounded shadow-anime transition-all duration-200 uppercase">
+                📖 Manga vs Anime
+            </button>
+            <button data-target="eredita" class="nav-button font-heading text-2xl bg-seven-blue text-white border-2 border-seven-blue py-1 px-6 rounded shadow-anime transition-all duration-200 uppercase">
+                📈 L'Eredità
+            </button>
+        </nav>
+
+        <!-- AREA CONTENUTO PRINCIPALE -->
+        <main id="content-area" class="bg-white border-4 border-seven-blue p-6 md:p-10 min-h-[50vh] relative shadow-anime rounded-xl">
+            
+            <!-- SPEECH 1: LE BUGIE ITALIANE -->
+            <section id="speech1" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mila-red pb-2">
+                    <span class="text-4xl">🎙️</span>
+                    <h2 class="font-heading text-4xl text-seven-blue uppercase">Speech 1: Mediaset e le Fake News</h2>
+                </div>
+                
+                <div class="speech-card p-6">
+                    <h3 class="font-bold text-lg mb-2 text-mila-red uppercase tracking-widest bg-gray-100 inline-block px-2 rounded">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4 font-medium">
+                        <li>
+                            <strong>La grande menzogna del titolo:</strong> "Siamo cresciuti cantando <em>'Mila e Shiro, due cuori nella pallavolo'</em>. Peccato che Shiro nella serie si veda sì e no per 5 minuti totali. Nell'opera originale non c'è nessuna storia d'amore, a malapena si salutano. Il titolo originale era semplicemente <em>Attacker You!</em>"
+                        </li>
+                        <li>
+                            <strong>La Cugina Inventata:</strong> "Nel primo episodio italiano, Mila dice di essere la cugina di Mimì Ayuhara. È una bugia inventata di sana pianta dal doppiaggio italiano per attirare il pubblico che già amava Mimì. In Giappone le due serie non hanno nulla in comune, nemmeno lo studio di produzione."
+                        </li>
+                        <li>
+                            <strong>Il Successo in Italia:</strong> "A differenza dell'Italia, in patria l'anime non ebbe un gran successo e fu chiuso in soli 58 episodi. Da noi, invece, Italia 1 lo ha replicato all'infinito."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SPEECH 2: LE DUE MIMÌ E I TRAUMI -->
+            <section id="speech2" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-seven-blue pb-2">
+                    <span class="text-4xl">🏐</span>
+                    <h2 class="font-heading text-4xl text-seven-blue uppercase">Speech 2: Il Trauma Generazionale</h2>
+                </div>
+
+                <div class="speech-card p-6" style="border-color: #FDE047; box-shadow: 6px 6px 0px #1D4ED8;">
+                    <h3 class="font-bold text-lg mb-2 text-seven-blue uppercase tracking-widest bg-volley-yellow inline-block px-2 rounded">Traccia Speaker</h3>
+                    <ul class="list-disc list-outside ml-5 space-y-3 text-lg leading-relaxed mt-4 font-medium">
+                        <li>
+                            <strong>Le due Mimì:</strong> "Sfatiamo il mito. Non c'è stata una sola Mimì, ce ne sono state due, e nessuna era parente di Mila. C'era <em>Attack No.1</em> (Kozue) e <em>Ashita e Attack</em> (Mimi). In Italia le hanno confuse entrambe sotto il nome Mimì."
+                        </li>
+                        <li>
+                            <strong>I traumi infantili:</strong> "Mentre Mila si innamorava (poco) di Shiro, la prima vera Mimì degli anni '70 si allenava con le <strong>catene di ferro ai polsi</strong>, palleggiando palle da baseball e le moriva il fidanzato. Era la pallavolo vista come un film drammatico, uno <em>Spokon</em> puro."
+                        </li>
+                        <li>
+                            <strong>Le Streghe d'Oriente:</strong> "Tutto questo dramma nasce da una storia vera. Le ragazze giapponesi che vinsero l'oro alle Olimpiadi di Tokyo '64. Si allenavano in modo così disumano da essere soprannominate 'Le Streghe d'Oriente'. Mimì nasce in loro onore."
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- SEZIONE 0: LA GENESI (NUOVA) -->
+            <section id="genesi" class="content-section space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-volley-yellow pb-2">
+                    <span class="text-4xl">🌱</span>
+                    <h2 class="font-heading text-5xl text-seven-blue uppercase">Le Origini e l'Arrivo</h2>
+                </div>
+                <p class="text-lg leading-relaxed">
+                    <strong>Mila e Shiro</strong> nasce in Giappone nel <strong>1984</strong> con il titolo originale <em>"Attacker You!"</em>. Curiosamente, a differenza della prassi comune dell'epoca, manga e anime furono sviluppati quasi in contemporanea.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-blue-50 p-5 border-l-8 border-seven-blue rounded shadow-sm">
+                        <h3 class="font-bold text-xl mb-2 text-seven-blue">L'Opera Originale (1984)</h3>
+                        <p class="text-sm">Il manga fu scritto e disegnato da <strong>Jun Makimura</strong> e <strong>Shizuo Koizumi</strong>, pubblicato sulla rivista Nakayoshi. L'anime fu affidato alla <em>Knack Productions</em>, ma in patria non ottenne il successo sperato, fermandosi a 58 episodi.</p>
+                    </div>
+                    <div class="bg-red-50 p-5 border-l-8 border-mila-red rounded shadow-sm">
+                        <h3 class="font-bold text-xl mb-2 text-mila-red">L'Avvento in Italia (1986)</h3>
+                        <p class="text-sm">Il destino dell'opera si capovolse nel febbraio 1986 quando sbarcò in Italia su <strong>Rete 4</strong> (e poi Italia 1). Fu un successo travolgente, diventando un fenomeno di costume assoluto che segnò un'intera generazione di sportivi.</p>
+                    </div>
+                    <div class="bg-yellow-50 p-5 border-l-8 border-volley-yellow rounded shadow-sm md:col-span-2">
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">Un'estetica inconfondibile</h3>
+                        <p class="text-sm">Il tratto si distingueva per i grandi occhi espressivi e i fisici slanciati. Un aneddoto divertente: per rendere le schiacciate più spettacolari, gli animatori allungavano a dismisura le gambe delle giocatrici durante i salti (le celebri "schiacciate in volo"), sfidando la gravità e l'anatomia umana.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 1: LE BUGIE DELL'ADATTAMENTO -->
+            <section id="bugia" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-mila-red pb-2">
+                    <span class="text-4xl">🤥</span>
+                    <h2 class="font-heading text-5xl text-seven-blue uppercase">Le 3 Grandi Bugie Italiane</h2>
+                </div>
+                <p class="text-lg leading-relaxed">
+                    L'adattamento italiano del 1986 decise di stravolgere alcune cose per rendere il cartone più appetibile, sfruttando successi passati.
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-6 mt-6">
+                    <div class="bg-blue-50 p-5 border-t-8 border-seven-blue rounded shadow-sm">
+                        <h3 class="font-bold text-xl mb-2 text-seven-blue">1. Shiro il Fantasma</h3>
+                        <p class="text-sm">Il titolo italiano lo eleva a co-protagonista. In realtà, <strong>So Tachiki (Shiro)</strong> è una presenza marginale. Nel manga i due sono solo conoscenti e l'amore è un'illusione alimentata dalla sigla italiana.</p>
+                    </div>
+                    <div class="bg-red-50 p-5 border-t-8 border-mila-red rounded shadow-sm">
+                        <h3 class="font-bold text-xl mb-2 text-mila-red">2. La Finta Cugina</h3>
+                        <p class="text-sm">Nel primo episodio, il padre dice a <strong>Yu Hazuki (Mila)</strong>: <em>"Pensi di essere tua cugina Mimì Ayuhara?"</em>. Un crossover inventato di sana pianta per agganciarsi al successo di <em>Attack No.1</em>.</p>
+                    </div>
+                    <div class="bg-yellow-50 p-5 border-t-8 border-volley-yellow rounded shadow-sm">
+                        <h3 class="font-bold text-xl mb-2 text-gray-800">3. I Nomi Stravolti</h3>
+                        <p class="text-sm">Come in molti anime dell'epoca, i nomi originali sparirono per occidentalizzarli. Nami Hayase e Kaori Takigawa (le rivali storiche) mantennero nomi "orientaleggianti", ma a caso.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 2: LE DUE MIMÌ (Approfondita dal Bazar di Mari) -->
+            <section id="mimi" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-seven-blue pb-2">
+                    <span class="text-4xl">⛓️</span>
+                    <h2 class="font-heading text-5xl text-seven-blue uppercase">Il Trauma delle (Vero) Due "Mimì"</h2>
+                </div>
+                
+                <p class="text-lg leading-relaxed">
+                    Prima del sorriso di Mila, l'Italia aveva conosciuto ben due anime drammatici sulla pallavolo, che i palinsesti televisivi confusero e ridoppiarono più volte. Nessuna delle due era parente di Mila.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-8 mt-6">
+                    <div class="bg-white p-6 border-2 border-gray-800 shadow-[4px_4px_0px_#111] transform -rotate-1">
+                        <h3 class="font-heading text-3xl text-gray-800 mb-1">Attack No. 1 (1969)</h3>
+                        <p class="font-bold text-mila-red mb-1">In Italia: "Mimì e la nazionale di pallavolo"</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm mt-3">
+                            <li><strong>La vera protagonista:</strong> Kozue Ayuhara.</li>
+                            <li><strong>Atmosfera:</strong> Spokon puro. Dramma, sacrificio estremo.</li>
+                            <li><strong>Allenamenti:</strong> Celebri le scene in cui si allena con catene ai polsi o riceve pallonate sparate da macchine mortali.</li>
+                            <li><strong>Ispirazione:</strong> Le "Streghe d'Oriente", squadra nipponica oro alle Olimpiadi di Tokyo '64.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 border-2 border-seven-blue shadow-[4px_4px_0px_#1D4ED8] transform rotate-1">
+                        <h3 class="font-heading text-3xl text-seven-blue mb-1">Ashita e Attack! (1977)</h3>
+                        <p class="font-bold text-mila-red mb-1">In Italia: "Mimì e le ragazze della pallavolo"</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm mt-3">
+                            <li><strong>La (finta) seconda Mimì:</strong> Mimi Hijiri (il nome era Mimi anche in originale).</li>
+                            <li><strong>La verità:</strong> Uno studio di produzione diverso cercò di imitare il successo del primo anime, cavalcando l'onda dell'oro olimpico del 1976 (Montreal).</li>
+                            <li><strong>L'Inganno:</strong> In Italia fu doppiata in modo da sembrare un sequel o uno spin-off dell'altra Mimì.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 3: MANGA VS ANIME -->
+            <section id="manga" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-volley-yellow pb-2">
+                    <span class="text-4xl">📖</span>
+                    <h2 class="font-heading text-5xl text-seven-blue uppercase">Manga vs Anime</h2>
+                </div>
+                
+                <div class="bg-seven-blue text-white p-6 rounded-lg shadow-anime mb-6">
+                    <p class="text-lg font-medium italic">
+                        "Curiosamente, l'anime è iniziato in contemporanea col manga di Jun Makimura (1984), e la produzione tv ha preso una strada completamente diversa per allungare la storia."
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="border-l-4 border-mila-red pl-4">
+                        <h4 class="font-bold text-xl mb-2">Il fratellino Sunny</h4>
+                        <p class="text-gray-700">Nel manga <strong>non esiste</strong>. È stato creato appositamente per l'anime per intenerire il pubblico infantile e creare intermezzi comici.</p>
+                    </div>
+                    <div class="border-l-4 border-mila-red pl-4">
+                        <h4 class="font-bold text-xl mb-2">La Madre Sopravvissuta</h4>
+                        <p class="text-gray-700">Nell'anime, la madre di Mila (Kyushi) è viva, commenta le partite in TV e ha abbandonato la famiglia per la carriera. Nel manga... <strong>è morta</strong> quando Mila era piccola.</p>
+                    </div>
+                    <div class="border-l-4 border-mila-red pl-4">
+                        <h4 class="font-bold text-xl mb-2">La Riserva Robusta</h4>
+                        <p class="text-gray-700">Il personaggio di <strong>Yoghina Yokono</strong> è un'altra invenzione esclusiva della TV per aggiungere conflitti di spogliatoio e momenti comici.</p>
+                    </div>
+                    <div class="border-l-4 border-mila-red pl-4">
+                        <h4 class="font-bold text-xl mb-2">Le Schiacciate Impossibili</h4>
+                        <p class="text-gray-700">Come per Holly e Benji, l'anime esaspera le mosse. Nel manga il tono tecnico era molto più realistico e vicino alle vere dinamiche della pallavolo.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SEZIONE 4: EREDITA' E CHART -->
+            <section id="eredita" class="content-section hidden space-y-6">
+                <div class="flex items-center gap-3 mb-4 border-b-4 border-seven-blue pb-2">
+                    <span class="text-4xl">📈</span>
+                    <h2 class="font-heading text-5xl text-seven-blue uppercase">Il Fenomeno in Italia</h2>
+                </div>
+
+                <p class="text-center text-lg mb-6 font-bold">L'impatto di Mila & Shiro sulle palestre italiane è stato devastante.</p>
+
+                <div class="chart-container mb-8">
+                    <canvas id="milaChart"></canvas>
+                </div>
+
+                <!-- STATS BOTTOM -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8 text-center">
+                    <div class="p-3 bg-blue-100 rounded border-2 border-seven-blue">
+                        <div class="text-3xl font-heading text-seven-blue">58</div>
+                        <div class="text-xs uppercase font-bold">Episodi</div>
+                    </div>
+                    <div class="p-3 bg-red-100 rounded border-2 border-mila-red">
+                        <div class="text-3xl font-heading text-mila-red">+300%</div>
+                        <div class="text-xs uppercase font-bold">Iscrizioni Volley ('80s)</div>
+                    </div>
+                    <div class="p-3 bg-yellow-100 rounded border-2 border-volley-yellow">
+                        <div class="text-3xl font-heading text-gray-800">1</div>
+                        <div class="text-xs uppercase font-bold">Sequel (Pechino 2008)</div>
+                    </div>
+                    <div class="p-3 bg-gray-100 rounded border-2 border-gray-400">
+                        <div class="text-3xl font-heading text-gray-600">0</div>
+                        <div class="text-xs uppercase font-bold">Baci con Shiro</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer class="text-center mt-10 p-4 bg-seven-blue text-white rounded-xl shadow-inner border-t-4 border-volley-yellow">
+            <p class="font-heading uppercase tracking-widest text-2xl mb-1 text-volley-yellow">ATTACKER YOU!</p>
+            <p class="text-xs opacity-80 font-body">© 1984-2025 Analisi Pop. Nessun pallone Mikasa è stato maltrattato (forse).</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            
+            const buttons = document.querySelectorAll('.nav-button');
+            const sections = document.querySelectorAll('.content-section');
+            const chartCanvas = document.getElementById('milaChart');
+            const audio = document.getElementById('theme-audio');
+            const musicToggle = document.getElementById('music-toggle');
+            const musicIcon = document.getElementById('music-icon');
+
+            let myChart;
+            
+            // --- AUDIO LOGIC ---
+            audio.volume = 0.3; 
+
+            function updateMusicIcon(playing) {
+                if (playing) {
+                    musicIcon.textContent = '🏐';
+                    musicToggle.classList.add('music-playing');
+                } else {
+                    musicIcon.textContent = '🔇';
+                    musicToggle.classList.remove('music-playing');
+                }
+            }
+
+            const safePlay = () => {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => { updateMusicIcon(true); })
+                        .catch(error => { updateMusicIcon(false); });
+                }
+            };
+
+            const safePause = () => {
+                audio.pause();
+                updateMusicIcon(false);
+            };
+
+            musicToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (audio.paused) safePlay();
+                else safePause();
+            });
+
+            // Autoplay
+            const autoPlayPromise = audio.play();
+            if (autoPlayPromise !== undefined) {
+                autoPlayPromise.then(() => updateMusicIcon(true)).catch(() => {
+                    updateMusicIcon(false);
+                    const playOnInteraction = () => {
+                        safePlay();
+                        document.removeEventListener('click', playOnInteraction);
+                    };
+                    document.addEventListener('click', playOnInteraction, { once: true });
+                });
+            }
+
+            // --- NAVIGATION LOGIC ---
+            function initNavigation() {
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const targetId = button.dataset.target;
+                        sections.forEach(section => section.classList.add('hidden'));
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) targetSection.classList.remove('hidden');
+                        
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        if (!button.dataset.target.startsWith('speech')) {
+                            button.classList.add('active');
+                        }
+                        
+                        if (targetId === 'eredita' && !myChart) {
+                            initChart();
+                        }
+                    });
+                });
+                
+                const firstNavButton = document.querySelector('.nav-button:not([data-target^="speech"])');
+                if (firstNavButton) firstNavButton.click();
+            }
+
+            function initChart() {
+                if (chartCanvas) {
+                    const ctx = chartCanvas.getContext('2d');
+                    
+                    const data = {
+                        labels: ['Schiacciate Impossibili', 'Drammi Familiari', 'Ricezioni Punitive', 'Scene effettive con Shiro'],
+                        datasets: [{
+                            label: 'Composizione Tipica di un Episodio',
+                            data: [45, 30, 20, 5],
+                            backgroundColor: [
+                                '#EF4444', // Rosso Mila
+                                '#1D4ED8', // Blu Seven Fighters
+                                '#FDE047', // Giallo Volley
+                                '#D1D5DB'  // Grigio (Shiro)
+                            ],
+                            borderColor: '#FFFFFF',
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    };
+
+                    const config = {
+                        type: 'doughnut',
+                        data: data,
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: { family: 'Nunito', size: 14, weight: 'bold' },
+                                        color: '#111827'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            return ` ${context.label}: ${context.raw}%`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    myChart = new Chart(ctx, config);
+                }
+            }
+
+            initNavigation();
+        });
+    </script>
+</body>
+</html>
